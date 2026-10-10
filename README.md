@@ -2,8 +2,6 @@
 
 ARIDE is a Vite website for customer ride booking, approved-driver ride acceptance, numeric email OTP sign-in, trip-start OTP verification, and Razorpay online checkout.
 
-**Current branch limitation:** The API route source files are not present on `main`. Email OTP, live ride dispatch, trip-start verification, and online checkout therefore require those API routes to be restored before they can work.
-
 ## Local development
 
 ```bash
