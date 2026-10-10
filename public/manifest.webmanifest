@@ -1,0 +1,25 @@
+{
+  "id": "/",
+  "name": "ARIDE - India's Ride & Delivery Super App",
+  "short_name": "ARIDE",
+  "description": "Book rides and deliveries with ARIDE.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#E6E6FA",
+  "theme_color": "#0E300E",
+  "icons": [
+    {
+      "src": "/icons/aride-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/aride-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

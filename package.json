@@ -1,0 +1,22 @@
+{
+  "name": "aride-websit",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "dev:vercel": "vercel dev",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "start": "vite --host 0.0.0.0"
+  },
+  "devDependencies": {
+    "vercel": "^63.1.0",
+    "vite": "^8.3.4"
+  },
+  "dependencies": {
+    "firebase": "^11.10.0",
+    "firebase-admin": "^14.5.0",
+    "razorpay": "^2.9.8"
+  }
+}

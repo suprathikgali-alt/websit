@@ -1,0 +1,2603 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0E300E">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <title>ARIDE - India's Ride & Delivery Super App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        arideGold: '#A4863D',
+                        arideDark: '#0E300E',
+                        arideGray: '#0E300E',
+                        arideLight: '#E6E6FA'
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>#map,#trackingMap{z-index:10;width:100%;height:100%}@media (width<=1023px){#view-home,#view-tracking{flex-direction:column;overflow-y:auto}#view-home>div:first-child{flex:0 0 58%;height:58%}#view-home>div:last-child{flex:1 0 42%;height:42%;min-height:220px}#view-home>div:last-child #map{min-height:220px}#view-tracking>div:first-child{flex:0 0 58%;height:58%}#view-tracking>div:last-child{flex:1 0 42%;height:42%;min-height:220px}#view-tracking>div:last-child #trackingMap{min-height:220px}}.pulse-ring{animation:2s infinite pulse-animation;box-shadow:0 0 #a4863db3}@keyframes pulse-animation{0%{transform:scale(.95);box-shadow:0 0 #a4863db3}70%{transform:scale(1);box-shadow:0 0 0 20px #a4863d00}to{transform:scale(.95);box-shadow:0 0 #a4863d00}}::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}:root{--aride-forest:#0e300e;--aride-gold:#a4863d;--aride-charcoal:#333;--aride-lavender:#e6e6fa;--aride-light-yellow:#fff4cc;--aride-navy:#101b3f}body{background-color:var(--aride-lavender);color:var(--aride-charcoal)}body.bg-gray-100{background-color:var(--aride-lavender)!important}[class~=bg-arideDark],[class~=bg-arideGray]{background-color:var(--aride-forest)!important}[class~=bg-arideGold],[class~=hover\:bg-arideGold]:hover,[class~=hover\:bg-yellow-400]:hover{background-color:var(--aride-gold)!important}[class~=bg-gray-50],[class~=bg-gray-100],[class~=bg-gray-200],[class~=bg-yellow-50],[class~=bg-yellow-50\/60],[class~=bg-yellow-100],[class~=bg-yellow-200],[class~=bg-green-50],[class~=bg-green-100],[class~=bg-blue-100],[class~=bg-amber-500]{background-color:var(--aride-lavender)!important}[class~=bg-gray-900],[class~=bg-gray-800],[class~=bg-gray-700],[class~=bg-green-500]{background-color:var(--aride-forest)!important}[class~=hover\:bg-gray-100]:hover,[class~=hover\:bg-gray-200]:hover,[class~=hover\:bg-gray-300]:hover{background-color:var(--aride-lavender)!important}[class~=hover\:bg-black]:hover{background-color:var(--aride-forest)!important}[class~=text-arideDark],[class~=text-gray-300],[class~=text-gray-400],[class~=text-gray-500],[class~=text-gray-600],[class~=text-gray-700],[class~=text-gray-800],[class~=text-gray-900],[class~=text-yellow-600],[class~=text-yellow-700],[class~=text-yellow-800],[class~=text-blue-800],[class~=text-green-600],[class~=text-green-700],[class~=text-green-400],[class~=text-green-800]{color:var(--aride-charcoal)!important}[class~=text-red-100]{color:var(--aride-lavender)!important}[class~=text-arideGold],[class~=bg-arideGold][class~=text-arideDark]{color:var(--aride-forest)!important}[class~=text-yellow-400]{color:var(--aride-gold)!important}[class~=bg-arideDark] [class~=text-arideGold],[class~=bg-arideDark][class~=text-arideGold],[class~=bg-arideGray] [class~=text-arideGold],[class~=bg-arideGray][class~=text-arideGold],[class~=bg-gray-900][class~=text-arideGold],.bg-arideDark [class~=text-gray-300],.bg-arideDark [class~=text-gray-400],.bg-arideDark [class~=text-green-400],.bg-arideGray [class~=text-gray-300],.bg-arideGray [class~=text-gray-400],.bg-arideGray [class~=text-green-400],header [class~=text-arideGold]{color:var(--aride-lavender)!important}header .nav-btn.text-arideGold{text-decoration:underline;-webkit-text-decoration-color:var(--aride-gold);text-decoration-color:var(--aride-gold);text-underline-offset:5px}#citySelector,#mobileCitySelector{color:var(--aride-forest)!important;background-color:var(--aride-lavender)!important;border-color:var(--aride-gold)!important}[class~=border-arideDark],[class~=hover\:border-arideDark]:hover,[class~=border-gray-700],[class~=border-gray-800]{border-color:var(--aride-forest)!important}[class~=border-gray-100],[class~=border-gray-200],[class~=border-gray-300],[class~=border-gray-400],[class~=border-green-200],[class~=border-yellow-200],[class~=border-yellow-300],[class~=hover\:border-gray-300]:hover{border-color:#3333!important}[class~=from-yellow-50]{--tw-gradient-from:var(--aride-lavender) var(--tw-gradient-from-position);--tw-gradient-to:#e6e6fa00 var(--tw-gradient-to-position)}[class~=to-amber-100\/50]{--tw-gradient-to:#a4863d2e var(--tw-gradient-to-position)}[class~=hover\:text-arideGold]:hover{color:var(--aride-lavender)!important}[class~=hover\:text-gray-800]:hover{color:var(--aride-charcoal)!important}[class~=hover\:bg-red-50]:hover{background-color:var(--aride-lavender)!important}[class~=hover\:border-arideDark]:hover{border-color:var(--aride-forest)!important}::-webkit-scrollbar-track{background:var(--aride-lavender)}::-webkit-scrollbar-thumb{background:var(--aride-forest)}::-webkit-scrollbar-thumb:hover{background:var(--aride-gold)}header.bg-arideDark [class~=text-arideGold],header.bg-arideDark .nav-btn.text-gray-300{color:var(--aride-forest)!important}header.bg-arideDark .nav-btn.text-arideGold{-webkit-text-decoration-color:var(--aride-gold);text-decoration-color:var(--aride-gold);color:var(--aride-forest)!important}header span.bg-gray-900{background-color:var(--aride-lavender)!important;border-color:var(--aride-gold)!important}header #langSelector{background-color:var(--aride-lavender)!important;color:var(--aride-forest)!important;border-color:var(--aride-gold)!important}header.bg-arideDark{color:#fff;background-color:#000!important}header.bg-arideDark>div:first-child>div.bg-arideGold{background-color:var(--aride-navy)!important;color:#fff!important}header.bg-arideDark nav{background-color:var(--aride-navy);border-radius:.75rem;padding:.65rem .85rem}header.bg-arideDark nav .nav-btn.text-gray-300{color:var(--aride-lavender)!important}header.bg-arideDark nav .nav-btn.text-arideGold{color:var(--aride-gold)!important}body>div[class~=lg\:hidden][class~=bg-arideDark]{background-color:var(--aride-navy)!important;border-color:var(--aride-navy)!important}body>div[class~=lg\:hidden][class~=bg-arideDark] .mobile-nav.text-gray-400{color:var(--aride-lavender)!important}body>div[class~=lg\:hidden][class~=bg-arideDark] .mobile-nav.text-arideGold{color:var(--aride-gold)!important}.leaflet-bar a{color:var(--aride-forest)!important;background-color:var(--aride-lavender)!important}.leaflet-bar a:hover{color:var(--aride-forest)!important;background-color:var(--aride-gold)!important}.leaflet-control-attribution{color:var(--aride-charcoal)!important;background-color:#e6e6fae6!important}.leaflet-control-attribution a{color:var(--aride-forest)!important}</style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900 antialiased h-screen flex flex-col overflow-hidden">
+
+    <!-- Top Header -->
+    <header class="bg-arideDark text-white px-4 py-3 shadow-xl flex items-center justify-between z-30 flex-shrink-0">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+            <div class="bg-arideGold text-arideDark font-extrabold px-3.5 py-1.5 rounded-xl text-lg flex items-center shadow-lg transform hover:scale-105 transition">
+                <i class="fa-solid fa-bolt mr-1.5"></i> ARIDE
+            </div>
+            <span class="text-[10px] uppercase tracking-widest text-arideGold font-bold bg-gray-900 px-2.5 py-1 rounded-md border border-gray-800 hidden sm:inline">India Super App</span>
+        </div>
+        
+        <!-- India-wide City Selector -->
+        <div class="hidden lg:flex items-center space-x-4">
+            <div class="relative">
+                <select id="citySelector" onchange="changeCity(this.value)" class="bg-gray-900 text-arideGold text-xs font-bold px-3 py-2 rounded-xl border border-gray-700 focus:outline-none cursor-pointer max-w-[240px]">
+                    <option value="india">🇮🇳 All India</option>
+                    <optgroup label="North, Central & West India">
+                        <option value="delhi">📍 Delhi</option>
+                        <option value="mumbai">📍 Mumbai</option>
+                        <option value="pune">📍 Pune</option>
+                        <option value="jaipur">📍 Jaipur</option>
+                        <option value="jodhpur">📍 Jodhpur</option>
+                        <option value="udaipur">📍 Udaipur</option>
+                        <option value="lucknow">📍 Lucknow</option>
+                        <option value="chandigarh">📍 Chandigarh</option>
+                        <option value="dehradun">📍 Dehradun</option>
+                        <option value="shimla">📍 Shimla</option>
+                        <option value="srinagar">📍 Srinagar</option>
+                        <option value="jammu">📍 Jammu</option>
+                        <option value="leh">📍 Leh</option>
+                        <option value="amritsar">📍 Amritsar</option>
+                        <option value="gurugram">📍 Gurugram</option>
+                        <option value="noida">📍 Noida</option>
+                        <option value="agra">📍 Agra</option>
+                        <option value="varanasi">📍 Varanasi</option>
+                        <option value="ahmedabad">📍 Ahmedabad</option>
+                        <option value="vadodara">📍 Vadodara</option>
+                        <option value="rajkot">📍 Rajkot</option>
+                        <option value="surat">📍 Surat</option>
+                        <option value="panaji">📍 Panaji</option>
+                        <option value="nagpur">📍 Nagpur</option>
+                        <option value="nashik">📍 Nashik</option>
+                        <option value="bhopal">📍 Bhopal</option>
+                        <option value="jabalpur">📍 Jabalpur</option>
+                        <option value="indore">📍 Indore</option>
+                        <option value="raipur">📍 Raipur</option>
+                    </optgroup>
+                    <optgroup label="East & Northeast India">
+                        <option value="kolkata">📍 Kolkata</option>
+                        <option value="patna">📍 Patna</option>
+                        <option value="ranchi">📍 Ranchi</option>
+                        <option value="bhubaneswar">📍 Bhubaneswar</option>
+                        <option value="cuttack">📍 Cuttack</option>
+                        <option value="jamshedpur">📍 Jamshedpur</option>
+                        <option value="siliguri">📍 Siliguri</option>
+                        <option value="guwahati">📍 Guwahati</option>
+                        <option value="shillong">📍 Shillong</option>
+                        <option value="imphal">📍 Imphal</option>
+                        <option value="agartala">📍 Agartala</option>
+                        <option value="aizawl">📍 Aizawl</option>
+                        <option value="kohima">📍 Kohima</option>
+                        <option value="itanagar">📍 Itanagar</option>
+                        <option value="gangtok">📍 Gangtok</option>
+                        <option value="portblair">📍 Port Blair</option>
+                    </optgroup>
+                    <!-- Andhra Pradesh -->
+                    <optgroup label="Andhra Pradesh">
+                        <option value="visakhapatnam">📍 Visakhapatnam (Vizag)</option>
+                        <option value="vijayawada">📍 Vijayawada (Benz Circle)</option>
+                        <option value="tirupati">📍 Tirupati (Alipiri)</option>
+                        <option value="guntur">📍 Guntur (Brodipet)</option>
+                        <option value="kurnool">📍 Kurnool (C Camp)</option>
+                        <option value="nellore">📍 Nellore (Trunk Road)</option>
+                        <option value="rajamahendravaram">📍 Rajamahendravaram (Rajahmundry)</option>
+                        <option value="kakinada">📍 Kakinada (Main Road)</option>
+                        <option value="kadapa">📍 Kadapa (RTC Bus Stand)</option>
+                        <option value="anantapur">📍 Anantapur (Tower Clock)</option>
+                    </optgroup>
+                    <!-- Telangana -->
+                    <optgroup label="Telangana">
+                        <option value="hyderabad" selected>📍 Hyderabad (Banjara Hills)</option>
+                        <option value="warangal">📍 Warangal (Hanamkonda)</option>
+                        <option value="nizamabad">📍 Nizamabad (Bus Stand)</option>
+                        <option value="karimnagar">📍 Karimnagar (Collectorate)</option>
+                        <option value="khammam">📍 Khammam (Zilla Parishad)</option>
+                    </optgroup>
+                    <!-- Karnataka -->
+                    <optgroup label="Karnataka">
+                        <option value="bengaluru">📍 Bengaluru (Koramangala)</option>
+                        <option value="mysuru">📍 Mysuru (Palace Road)</option>
+                        <option value="mangaluru">📍 Mangaluru (Hampankatta)</option>
+                        <option value="hubballi">📍 Hubballi-Dharwad</option>
+                        <option value="belagavi">📍 Belagavi (Camp Area)</option>
+                    </optgroup>
+                    <!-- Tamil Nadu -->
+                    <optgroup label="Tamil Nadu">
+                        <option value="chennai">📍 Chennai (T. Nagar)</option>
+                        <option value="coimbatore">📍 Coimbatore (RS Puram)</option>
+                        <option value="madurai">📍 Madurai (Temple Street)</option>
+                        <option value="trichy">📍 Tiruchirappalli (Trichy)</option>
+                        <option value="salem">📍 Salem (Fairlands)</option>
+                        <option value="vellore">📍 Vellore (Fort Road)</option>
+                        <option value="tiruppur">📍 Tiruppur</option>
+                    </optgroup>
+                    <!-- Kerala & Puducherry -->
+                    <optgroup label="Kerala & Puducherry">
+                        <option value="kochi">📍 Kochi (MG Road)</option>
+                        <option value="trivandrum">📍 Thiruvananthapuram (Trivandrum)</option>
+                        <option value="kozhikode">📍 Kozhikode (Calicut)</option>
+                        <option value="thrissur">📍 Thrissur (Round East)</option>
+                        <option value="kollam">📍 Kollam</option>
+                        <option value="puducherry">📍 Puducherry (White Town)</option>
+                    </optgroup>
+                </select>
+            </div>
+            
+            <nav class="flex items-center space-x-4 text-sm font-semibold">
+                <button onclick="switchTab('home')" class="nav-btn text-arideGold hover:text-arideGold transition flex items-center gap-1.5" data-tab="home">
+                    <i class="fa-solid fa-house"></i> Book
+                </button>
+                <button onclick="openDriverDashboard()" class="driver-nav nav-btn text-gray-300 hover:text-arideGold transition flex items-center gap-1.5 hidden" data-tab="driver">
+                    <i class="fa-solid fa-motorcycle"></i> Driver
+                </button>
+                <button onclick="switchTab('rides')" class="nav-btn text-gray-300 hover:text-arideGold transition flex items-center gap-1.5" data-tab="rides">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Rides
+                </button>
+                <button onclick="switchTab('safety')" class="nav-btn text-gray-300 hover:text-arideGold transition flex items-center gap-1.5" data-tab="safety">
+                    <i class="fa-solid fa-shield-halved"></i> Safety
+                </button>
+            </nav>
+        </div>
+
+        <!-- Right Side Quick Actions -->
+        <div class="flex items-center space-x-3">
+            <button id="installAppButton" type="button" class="hidden bg-arideGold hover:bg-yellow-400 text-arideDark font-bold px-3 py-1.5 rounded-full text-xs shadow" aria-label="Install ARIDE">
+                <i class="fa-solid fa-download"></i> Install App
+            </button>
+            <button onclick="openAuthModal()" class="bg-white/10 hover:bg-white/20 text-white font-bold px-3 py-1.5 rounded-full text-xs flex items-center gap-1 shadow" aria-label="Sign in to ARIDE">
+                <i class="fa-solid fa-envelope"></i> <span id="authStatusLabel">Sign in</span>
+            </button>
+            <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-gray-900 text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-700 focus:outline-none">
+                <option value="en">English</option>
+                <option value="te">తెలుగు (Telugu)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+                <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                <option value="ml">മലയാളം (Malayalam)</option>
+            </select>
+
+            <button onclick="openSosModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-full text-xs flex items-center gap-1 shadow-lg animate-pulse">
+                <i class="fa-solid fa-triangle-exclamation"></i> SOS
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="lg:hidden bg-arideDark text-white flex justify-around py-3 border-t border-gray-800 z-30 flex-shrink-0">
+        <button onclick="switchTab('home')" class="mobile-nav text-arideGold flex flex-col items-center text-[10px]" data-tab="home">
+            <i class="fa-solid fa-house text-sm mb-0.5"></i> Book
+        </button>
+        <button onclick="openDriverDashboard()" class="driver-nav mobile-nav text-gray-400 flex flex-col items-center text-[10px] hidden" data-tab="driver">
+            <i class="fa-solid fa-motorcycle text-sm mb-0.5"></i> Driver
+        </button>
+        <button onclick="switchTab('rides')" class="mobile-nav text-gray-400 flex flex-col items-center text-[10px]" data-tab="rides">
+            <i class="fa-solid fa-clock-rotate-left text-sm mb-0.5"></i> Rides
+        </button>
+        <button onclick="switchTab('safety')" class="mobile-nav text-gray-400 flex flex-col items-center text-[10px]" data-tab="safety">
+            <i class="fa-solid fa-shield-halved text-sm mb-0.5"></i> Safety
+        </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 relative flex overflow-hidden">
+
+        <!-- VIEW 1: HOME & BOOKING FLOW -->
+        <div id="view-home" class="view-content flex-1 flex flex-col lg:flex-row w-full h-full relative">
+            
+            <!-- Left Side: Booking Panel -->
+            <div class="w-full lg:w-[460px] bg-white h-full flex flex-col shadow-2xl z-20 overflow-y-auto">
+                <div class="p-5 flex-1">
+                    
+                    <!-- Tagline Banner -->
+                    <div class="mb-4 bg-yellow-50 border border-yellow-200 rounded-2xl p-3 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xl">🚀</span>
+                            <div>
+                                <h4 class="text-xs font-extrabold text-gray-900" id="uiTagline">India's Fastest & Most Affordable Ride</h4>
+                                <p class="text-[10px] text-gray-500">Book a ride and get matched with an available driver.</p>
+                            </div>
+                        </div>
+                        <span class="bg-arideDark text-arideGold font-bold text-[10px] px-2.5 py-1 rounded-lg">4.9 ★</span>
+                    </div>
+
+                    <!-- Vehicle Type Selector Tabs -->
+                    <div class="grid grid-cols-4 gap-2 mb-5">
+                        <button onclick="selectVehicle('bike')" id="v-bike" class="vehicle-tab border-2 border-arideGold bg-yellow-50/60 rounded-2xl p-3 flex flex-col items-center justify-center transition shadow-sm">
+                            <i class="fa-solid fa-motorcycle text-xl text-arideDark mb-1"></i>
+                            <span class="text-xs font-bold text-gray-900">Bike Taxi</span>
+                            <span class="text-[9px] text-gray-500">₹15/km • Fast</span>
+                        </button>
+                        <button onclick="selectVehicle('auto')" id="v-auto" class="vehicle-tab border-2 border-gray-200 bg-white rounded-2xl p-3 flex flex-col items-center justify-center transition hover:border-gray-300">
+                            <i class="fa-solid fa-auto-rickshaw text-xl text-arideDark mb-1"></i>
+                            <span class="text-xs font-bold text-gray-900">Auto</span>
+                            <span class="text-[9px] text-gray-500">No Bargain</span>
+                        </button>
+                        <button onclick="selectVehicle('cab')" id="v-cab" class="vehicle-tab border-2 border-gray-200 bg-white rounded-2xl p-3 flex flex-col items-center justify-center transition hover:border-gray-300">
+                            <i class="fa-solid fa-car text-xl text-arideDark mb-1"></i>
+                            <span class="text-xs font-bold text-gray-900">Cab AC</span>
+                            <span class="text-[9px] text-gray-500">Comfort</span>
+                        </button>
+                        <button onclick="selectVehicle('parcel')" id="v-parcel" class="vehicle-tab border-2 border-gray-200 bg-white rounded-2xl p-3 flex flex-col items-center justify-center transition hover:border-gray-300">
+                            <i class="fa-solid fa-box-open text-xl text-arideDark mb-1"></i>
+                            <span class="text-xs font-bold text-gray-900">Parcel</span>
+                            <span class="text-[9px] text-gray-500">Instant</span>
+                        </button>
+                    </div>
+
+                    <!-- Pickup & Drop Street & Location Inputs with Dynamic Autocomplete -->
+                    <div class="lg:hidden mb-3">
+                        <label for="mobileCitySelector" class="block text-[10px] uppercase font-bold text-gray-400 mb-1">City / Region</label>
+                        <select id="mobileCitySelector" onchange="changeCity(this.value)" class="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs font-semibold text-gray-800 focus:outline-none focus:border-arideDark"></select>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 relative mb-4">
+                        <div class="absolute left-7 top-7 bottom-7 w-0.5 border-l-2 border-dashed border-gray-400"></div>
+                        
+                        <!-- Pickup Input -->
+                        <div class="flex items-center mb-3 relative">
+                            <div class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs z-10 mr-3 flex-shrink-0 shadow">
+                                <i class="fa-solid fa-circle text-[6px]"></i>
+                            </div>
+                            <div class="flex-1 relative">
+                                <label class="block text-[10px] uppercase font-bold text-gray-400">Pickup Street, Avenue or Landmark</label>
+                                <input type="text" id="pickupInput" value="Banjara Hills Road No. 12, Hyderabad" placeholder="Search any address, road or place in India" oninput="handleLocationInput('pickup', this.value, true)" onfocus="handleLocationInput('pickup', this.value, false)" class="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs font-semibold text-gray-800 focus:outline-none focus:border-arideDark">
+                                <!-- Pickup Suggestions Box -->
+                                <div id="pickupSuggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-2xl shadow-2xl z-30 max-h-52 overflow-y-auto"></div>
+                            </div>
+                        </div>
+
+                        <!-- Drop Input -->
+                        <div class="flex items-center relative">
+                            <div class="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs z-10 mr-3 flex-shrink-0 shadow">
+                                <i class="fa-solid fa-square text-[6px]"></i>
+                            </div>
+                            <div class="flex-1 relative">
+                                <label class="block text-[10px] uppercase font-bold text-gray-400">Drop Street, Avenue or Landmark</label>
+                                <input type="text" id="dropInput" value="Hitec City Cyber Towers, Hyderabad" placeholder="Search any address, road or place in India" oninput="handleLocationInput('drop', this.value, true)" onfocus="handleLocationInput('drop', this.value, false)" class="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs font-semibold text-gray-800 focus:outline-none focus:border-arideDark">
+                                <!-- Drop Suggestions Box -->
+                                <div id="dropSuggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-2xl shadow-2xl z-30 max-h-52 overflow-y-auto"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fare Estimation & Coupon Section -->
+                    <div class="bg-gradient-to-br from-yellow-50 to-amber-100/50 border border-yellow-200 rounded-2xl p-4 mb-4 shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-arideDark text-arideGold font-extrabold text-xs px-2.5 py-1 rounded-lg" id="vehicleBadge">Bike Taxi</span>
+                                <span class="text-xs text-gray-600 font-medium" id="estDuration">⚡ 4 mins away on street</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xl font-extrabold text-arideDark" id="estFare">₹55</span>
+                                <span class="text-xs text-gray-500 line-through ml-1" id="estOriginalFare">₹85</span>
+                            </div>
+                        </div>
+
+                        <!-- Coupon Input Field -->
+                        <div class="flex items-center space-x-2 pt-2 border-t border-yellow-200">
+                            <div class="relative flex-1">
+                                <input type="text" id="couponInput" placeholder="Enter coupon (e.g. SOUTH50)" class="w-full bg-white border border-yellow-300 rounded-xl px-3 py-1.5 text-xs font-bold uppercase text-gray-800 focus:outline-none">
+                            </div>
+                            <button onclick="applyCoupon()" class="bg-arideDark hover:bg-black text-arideGold font-bold px-4 py-1.5 rounded-xl text-xs shadow">
+                                Apply
+                            </button>
+                        </div>
+                        <div id="couponMessage" class="text-[10px] text-green-700 font-bold mt-1.5 hidden">
+                            <i class="fa-solid fa-check-circle"></i> South India Special Coupon Applied!
+                        </div>
+                    </div>
+
+                    <!-- Payment Method Selection -->
+                    <div class="mb-5">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Payment Method</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" onclick="selectPayment('online')" id="pay-online" aria-pressed="false" class="pay-btn border-2 border-gray-200 bg-white rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 text-xs font-bold text-gray-800 shadow-sm">
+                                <i class="fa-solid fa-mobile-screen text-arideDark"></i>
+                                <span>Online · UPI / cards</span>
+                                <span class="text-[9px] font-medium text-gray-500">Razorpay checkout</span>
+                            </button>
+                            <button type="button" onclick="selectPayment('cash')" id="pay-cash" aria-pressed="true" class="pay-btn border-2 border-arideDark bg-gray-50 rounded-xl p-2.5 flex items-center justify-center space-x-1.5 text-xs font-bold text-gray-600">
+                                <i class="fa-solid fa-money-bill-wave text-green-600"></i>
+                                <span>Cash</span>
+                            </button>
+                        </div>
+                        <p id="paymentReadinessMessage" class="text-[10px] text-gray-500 mt-2">Checking secure checkout availability…</p>
+                    </div>
+
+                </div>
+
+                <!-- Book Now Action Button -->
+                <div class="p-4 bg-white border-t border-gray-200 flex-shrink-0">
+                    <button onclick="startBooking()" class="w-full bg-arideGold hover:bg-yellow-400 text-arideDark font-extrabold py-4 rounded-2xl shadow-xl flex items-center justify-center space-x-2 text-sm transition transform active:scale-95">
+                        <span>Book <span id="btnVehicleName">Bike Taxi</span> from Street Now</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Side: Interactive Leaflet Map -->
+            <div id="bookingMapPanel" class="flex-1 h-full relative">
+                <div id="map"></div>
+                <div class="absolute top-4 left-4 z-20 max-w-[calc(100%-8rem)] bg-white/95 rounded-xl shadow-lg border border-gray-200 px-4 py-3">
+                    <p id="mapSelectionPrompt" class="text-xs font-bold text-gray-800">Choose pickup and drop-off on the map when you book.</p>
+                    <p class="text-[10px] text-gray-500 mt-1">Select a point, then tap the map to place it.</p>
+                </div>
+                <!-- Floating Map Controls -->
+                <div class="absolute top-4 right-4 z-20 flex flex-col space-y-2">
+                    <button id="mapPickupButton" onclick="selectMapLocation('pickup')" class="bg-white hover:bg-gray-100 text-gray-800 px-3 h-10 rounded-full shadow-xl flex items-center justify-center gap-2 text-xs font-bold border border-gray-200">
+                        <i class="fa-solid fa-circle text-green-600"></i> Set pickup
+                    </button>
+                    <button id="mapDropButton" onclick="selectMapLocation('drop')" class="bg-white hover:bg-gray-100 text-gray-800 px-3 h-10 rounded-full shadow-xl flex items-center justify-center gap-2 text-xs font-bold border border-gray-200">
+                        <i class="fa-solid fa-square text-red-600"></i> Set drop
+                    </button>
+                    <button onclick="showIndiaMap()" class="bg-white hover:bg-gray-100 text-gray-800 px-3 h-10 rounded-full shadow-xl flex items-center justify-center gap-2 text-xs font-bold border border-gray-200" title="Show all India">
+                        <i class="fa-solid fa-map"></i> India
+                    </button>
+                    <button onclick="recenterMap()" class="bg-white hover:bg-gray-100 text-gray-800 w-10 h-10 rounded-full shadow-xl flex items-center justify-center text-sm font-bold border border-gray-200" title="Recenter Map">
+                        <i class="fa-solid fa-location-crosshairs"></i>
+                    </button>
+                </div>
+                <button id="continueMapBooking" onclick="startBooking()" class="hidden absolute bottom-4 left-4 z-20 bg-arideGold hover:bg-yellow-400 text-arideDark font-extrabold px-5 py-3 rounded-2xl shadow-xl text-sm">
+                    Confirm locations &amp; continue
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW 2: SEARCHING / FINDING CAPTAIN -->
+        <div id="view-searching" class="view-content hidden flex-1 flex flex-col items-center justify-center bg-white p-6 relative">
+            <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 right-0 h-1.5 bg-gray-200 overflow-hidden">
+                    <div class="h-full bg-arideGold animate-pulse w-3/4"></div>
+                </div>
+                
+                <!-- Radar Pulse Animation -->
+                <div class="w-28 h-28 mx-auto mb-6 relative flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full bg-yellow-100 pulse-ring"></div>
+                    <div class="absolute inset-2 rounded-full bg-yellow-200 animate-ping opacity-75"></div>
+                    <div class="w-16 h-16 bg-arideGold rounded-full flex items-center justify-center text-arideDark text-2xl shadow-2xl z-10">
+                        <i class="fa-solid fa-motorcycle" id="searchingIcon"></i>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-extrabold text-arideDark mb-2">Locating Nearby Captains on Street...</h2>
+                <p class="text-xs text-gray-500 mb-6">Scanning local arterial roads & avenues around <strong id="searchPickupName">Banjara Hills</strong></p>
+
+                <div class="bg-gray-50 rounded-2xl p-4 mb-6 text-left border border-gray-200 space-y-2">
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-gray-500">Pickup Street</span>
+                        <span class="text-gray-900 truncate max-w-[200px]" id="summaryPickup">Banjara Hills Road No. 12</span>
+                    </div>
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-gray-500">Drop Point</span>
+                        <span class="text-gray-900 truncate max-w-[200px]" id="summaryDrop">Hitec City Cyber Towers</span>
+                    </div>
+                    <div class="flex justify-between text-xs font-semibold border-t border-gray-200 pt-2">
+                        <span class="text-gray-500">Estimated Fare</span>
+                        <span class="text-arideDark font-extrabold" id="summaryFare">₹55 (UPI)</span>
+                    </div>
+                </div>
+
+                <button onclick="cancelBooking()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-xl transition text-xs">
+                    Cancel Request
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW 3: LIVE RIDE TRACKING -->
+        <div id="view-tracking" class="view-content hidden flex-1 flex flex-col lg:flex-row w-full h-full relative">
+            
+            <!-- Left Side: Captain Info & Ride Status -->
+            <div class="w-full lg:w-[460px] bg-white h-full flex flex-col shadow-2xl z-20 overflow-y-auto p-6">
+                
+                <div class="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-green-700 block">Captain Arriving on Street</span>
+                        <span class="text-2xl font-extrabold text-green-800" id="etaCountdown">2 mins</span>
+                    </div>
+                    <div class="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-xl shadow">
+                        <i class="fa-solid fa-shield-check"></i>
+                    </div>
+                </div>
+
+                <!-- Captain Profile Card -->
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-4">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="relative">
+                            <div id="captainPhoto" class="w-16 h-16 rounded-full border-2 border-arideGold shadow bg-arideDark text-arideGold flex items-center justify-center text-2xl"><i class="fa-solid fa-user"></i></div>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-gray-900" id="captainName">Waiting for a driver</h3>
+                            <p class="text-xs text-gray-500" id="captainVehicleModel">A driver will appear after accepting your request.</p>
+                            <div class="bg-arideDark text-arideGold font-extrabold text-xs px-2.5 py-1 rounded-md inline-block mt-1 tracking-wider shadow hidden" id="captainVehicleNo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p id="customerRideStatus" class="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-4 text-xs font-bold text-gray-800">Ride status will update when a driver accepts your request.</p>
+
+                <!-- Turn-by-Turn Simulated Directions -->
+                <div class="bg-gray-50 rounded-2xl p-4 mb-4 border border-gray-200">
+                    <span class="text-[10px] uppercase font-bold text-gray-400 block mb-2">Ride directions</span>
+                    <div class="flex items-center space-x-3 text-xs font-semibold text-gray-800">
+                        <div class="w-7 h-7 bg-arideGold text-arideDark rounded-xl flex items-center justify-center font-bold text-xs shadow flex-shrink-0">
+                            <i class="fa-solid fa-diamond-turn-right"></i>
+                        </div>
+                        <span id="navDirectionText">Take left from local lane into main arterial avenue</span>
+                    </div>
+                </div>
+
+                <!-- Safety & SOS Quick Trigger -->
+                <div class="mt-auto space-y-3">
+                    <button onclick="openSosModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Emergency SOS / Share Trip</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Right Side: Live Tracking Map -->
+            <div class="flex-1 h-full relative">
+                <div class="absolute top-4 left-4 z-20 max-w-[calc(100%-5rem)] bg-white/95 rounded-xl shadow-lg border border-gray-200 px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <span id="riderGpsIndicator" class="w-2.5 h-2.5 rounded-full bg-amber-500 flex-shrink-0"></span>
+                        <span id="riderGpsStatus" class="text-xs font-bold text-gray-800">Waiting for live driver location</span>
+                    </div>
+                    <p id="riderGpsHelp" class="text-[10px] text-gray-500 mt-1">Location appears after the assigned driver shares it.</p>
+                </div>
+                <div id="trackingMap" class="w-full h-full"></div>
+            </div>
+        </div>
+
+        <!-- DRIVER VIEW: separate queue for approved captains -->
+        <div id="view-driver" class="view-content hidden flex-1 bg-gray-50 overflow-y-auto p-6 lg:p-10">
+            <div class="max-w-4xl mx-auto w-full">
+                <div class="bg-arideDark text-white rounded-3xl p-6 mb-6 shadow-xl">
+                    <div class="flex flex-wrap justify-between items-center gap-4">
+                        <div>
+                            <p class="text-xs uppercase font-bold text-gray-300">ARIDE Captain</p>
+                            <h2 class="text-2xl font-extrabold mt-1">Driver dashboard</h2>
+                            <p id="driverAccountStatus" class="text-sm mt-2">Sign in with your approved driver email to continue.</p>
+                        </div>
+                        <button id="driverAvailabilityButton" onclick="toggleDriverAvailability()" disabled class="bg-gray-500 text-white font-extrabold px-5 py-3 rounded-xl text-sm disabled:opacity-60">
+                            Go online
+                        </button>
+                    </div>
+                </div>
+                <div id="driverRoleNotice" class="bg-white border border-gray-200 rounded-2xl p-5 text-sm text-gray-700 mb-5">
+                    Driver access is restricted to accounts approved in Firebase. Customers cannot enable driver access themselves.
+                </div>
+                <div id="driverQueue" class="space-y-4"></div>
+                <div id="driverActiveRide" class="space-y-4 mt-5"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 5: MY RIDES HISTORY -->
+        <div id="view-rides" class="view-content hidden flex-1 bg-gray-50 overflow-y-auto p-6 lg:p-10">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="text-2xl font-extrabold text-gray-900 mb-6">My Recent Rides</h2>
+                <div class="space-y-4" id="ridesHistoryList">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 6: SAFETY & SOS -->
+        <div id="view-safety" class="view-content hidden flex-1 bg-gray-50 overflow-y-auto p-6 lg:p-10">
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-red-600 text-white rounded-3xl p-8 mb-8 shadow-2xl">
+                    <span class="bg-white/20 text-white text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Safety First</span>
+                    <h2 class="text-3xl font-extrabold mt-3 mb-2">Your Safety Across Every South Indian Street</h2>
+                    <p class="text-red-100 text-sm max-w-lg mb-6">We ensure strict background checks for all captains, helmet sanitation before every ride, and 24/7 emergency response.</p>
+                    <button onclick="openSosModal()" class="bg-white text-red-600 hover:bg-red-50 font-extrabold px-6 py-3 rounded-2xl shadow transition text-sm">
+                        <i class="fa-solid fa-triangle-exclamation mr-2"></i> Trigger Emergency SOS
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-md border border-gray-100 text-center">
+                        <div class="w-12 h-12 bg-yellow-100 text-yellow-800 rounded-2xl flex items-center justify-center text-xl mx-auto mb-4">
+                            <span class="font-bold">🪖</span>
+                        </div>
+                        <h4 class="font-bold text-gray-900 mb-1">Helmet Hygiene</h4>
+                        <p class="text-xs text-gray-500">Sanitized clean hairnets & helmets provided for every passenger.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-md border border-gray-100 text-center">
+                        <div class="w-12 h-12 bg-green-100 text-green-800 rounded-2xl flex items-center justify-center text-xl mx-auto mb-4">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 mb-1">Verified Captains</h4>
+                        <p class="text-xs text-gray-500">100% police verification and local background checks for all drivers.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-md border border-gray-100 text-center">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-800 rounded-2xl flex items-center justify-center text-xl mx-auto mb-4">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 mb-1">24/7 Support</h4>
+                        <p class="text-xs text-gray-500">Dedicated safety response team available instantly via app in local languages.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Email OTP sign-in for customers and approved drivers. -->
+    <div id="authModal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <form onsubmit="sendSignInOtp(event)" class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h2 id="authTitle" class="text-2xl font-extrabold text-gray-900">Sign in to ARIDE</h2>
+                    <p class="text-xs text-gray-500 mt-1">We’ll email a six-digit code. No password needed.</p>
+                </div>
+                <button type="button" onclick="closeAuthModal()" class="text-gray-500 hover:text-gray-900 p-2" aria-label="Close sign-in">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <label for="authEmailInput" class="block text-xs font-bold text-gray-700 mb-1">Email address</label>
+            <input id="authEmailInput" name="email" type="email" autocomplete="email" required maxlength="254" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm mb-3" placeholder="you@example.com">
+            <label id="authOtpLabel" for="authOtpInput" class="hidden block text-xs font-bold text-gray-700 mb-1">Six-digit email code</label>
+            <input id="authOtpInput" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" class="hidden w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm mb-3 tracking-[0.3em]" placeholder="000000">
+            <p id="authMessage" class="text-xs text-gray-500 mb-4" role="status">Use this same sign-in for booking or the separate driver dashboard.</p>
+            <button id="authSubmitButton" type="submit" class="w-full bg-arideGold hover:bg-yellow-400 text-arideDark font-extrabold py-3 rounded-xl text-sm">Send email code</button>
+            <button id="authResendButton" type="button" onclick="resendEmailOtp()" class="hidden w-full text-gray-600 font-bold py-3 mt-1 text-sm">Send a new code</button>
+            <button id="authSignOutButton" type="button" onclick="signOutOfAride()" class="hidden w-full text-gray-600 font-bold py-3 mt-2 text-sm">Sign out</button>
+        </form>
+    </div>
+
+    <!-- SOS Emergency Modal -->
+    <div id="sosModal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative text-center">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-2xl font-extrabold text-gray-900 mb-2">Emergency SOS Assistance</h3>
+            <p class="text-xs text-gray-500 mb-6">Use this only in case of emergency. Your live GPS location will be shared immediately with police authorities and emergency contacts.</p>
+            
+            <div class="space-y-3 mb-6">
+                <button onclick="triggerSosAction('police')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-2xl text-sm flex items-center justify-center space-x-2 shadow">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Call Police (112)</span>
+                </button>
+                <button onclick="triggerSosAction('support')" class="w-full bg-arideDark hover:bg-black text-white font-bold py-3.5 rounded-2xl text-sm flex items-center justify-center space-x-2 shadow">
+                    <i class="fa-solid fa-headset"></i>
+                    <span>ARIDE 24/7 Safety Helpline</span>
+                </button>
+            </div>
+            <button onclick="closeSosModal()" class="text-xs text-gray-500 hover:text-gray-800 font-bold">
+                Dismiss / Close
+            </button>
+        </div>
+    </div>
+
+    <!-- Rating & Tip Modal -->
+    <div id="ratingModal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl text-center">
+            <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <h3 class="text-2xl font-extrabold text-gray-900 mb-1">Rate Your Ride</h3>
+            <p class="text-xs text-gray-500 mb-6">How was your trip with <span id="ratedCaptainName">Srinu Varma</span>?</p>
+            
+            <div class="flex justify-center space-x-2 mb-6" id="starRatingContainer">
+                <button onclick="setRating(1)" class="text-3xl text-yellow-400 star-btn"><i class="fa-solid fa-star"></i></button>
+                <button onclick="setRating(2)" class="text-3xl text-yellow-400 star-btn"><i class="fa-solid fa-star"></i></button>
+                <button onclick="setRating(3)" class="text-3xl text-yellow-400 star-btn"><i class="fa-solid fa-star"></i></button>
+                <button onclick="setRating(4)" class="text-3xl text-yellow-400 star-btn"><i class="fa-solid fa-star"></i></button>
+                <button onclick="setRating(5)" class="text-3xl text-yellow-400 star-btn"><i class="fa-solid fa-star"></i></button>
+            </div>
+
+            <!-- Tipping Options -->
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Add a Tip for Captain</label>
+            <div class="grid grid-cols-4 gap-2 mb-6">
+                <button onclick="selectTip(10)" class="tip-btn border border-gray-300 rounded-xl py-2 text-xs font-bold hover:border-arideDark">₹10</button>
+                <button onclick="selectTip(20)" class="tip-btn border border-gray-300 rounded-xl py-2 text-xs font-bold hover:border-arideDark">₹20</button>
+                <button onclick="selectTip(50)" class="tip-btn border border-gray-300 rounded-xl py-2 text-xs font-bold hover:border-arideDark">₹50</button>
+                <button onclick="selectTip(0)" class="tip-btn border border-gray-300 rounded-xl py-2 text-xs font-bold hover:border-arideDark">None</button>
+            </div>
+
+            <button onclick="submitRating()" class="w-full bg-arideGold hover:bg-yellow-400 text-arideDark font-extrabold py-3.5 rounded-2xl text-sm shadow">
+                Submit & Complete
+            </button>
+        </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full h-[500px] flex flex-col shadow-2xl overflow-hidden">
+            <div class="bg-arideDark text-white px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <img src="https://placehold.co/80x80/A4863D/0E300E?text=Captain" class="w-9 h-9 rounded-full object-cover">
+                    <div>
+                        <h4 class="text-sm font-bold" id="chatCaptainName">Srinu Varma</h4>
+                        <span class="text-[10px] text-green-400 font-medium">● Online on Street</span>
+                    </div>
+                </div>
+                <button onclick="closeChatModal()" class="text-white hover:text-arideGold"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="flex-1 p-4 bg-gray-50 overflow-y-auto space-y-3" id="chatMessages">
+                <div class="bg-white p-3 rounded-2xl shadow-sm text-xs max-w-[80%] font-medium">
+                    Sir, I have reached your street entrance near the main junction!
+                </div>
+            </div>
+            <div class="p-3 bg-white border-t border-gray-200 flex items-center space-x-2">
+                <input type="text" id="chatInput" placeholder="Type a message..." class="flex-1 bg-gray-100 rounded-xl px-4 py-2.5 text-xs focus:outline-none">
+                <button onclick="sendChatMessage()" class="bg-arideGold text-arideDark w-10 h-10 rounded-xl flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call Simulation Modal -->
+    <div id="callModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-arideDark text-white rounded-3xl max-w-sm w-full p-8 text-center shadow-2xl relative">
+            <div class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-arideGold shadow-xl">
+                <img src="https://placehold.co/120x120/A4863D/0E300E?text=Captain" class="w-full h-full object-cover">
+            </div>
+            <h3 class="text-2xl font-bold mb-1" id="callCaptainName">Srinu Varma</h3>
+            <p class="text-xs text-green-400 mb-8 animate-pulse">Connecting secure call...</p>
+            <div class="flex justify-center space-x-6">
+                <button onclick="closeCallModal()" class="w-14 h-14 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-xl shadow-lg">
+                    <i class="fa-solid fa-phone-slash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 bg-arideDark text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300">
+        <div class="w-7 h-7 bg-arideGold text-arideDark rounded-full flex items-center justify-center text-xs font-bold" id="toastIcon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <span class="text-xs font-semibold" id="toastMessage">Success action completed</span>
+    </div>
+
+    <script>
+        // Comprehensive South India Master Street & Landmark Database for Autocomplete
+        const masterStreetsDatabase = [
+            // Andhra Pradesh
+            "RK Beach Road, Visakhapatnam",
+            "Dwaraka Nagar 3rypt Main Road, Visakhapatnam",
+            "Jagadamba Junction Road, Visakhapatnam",
+            "Madhurawada IT SEZ Avenue, Visakhapatnam",
+            "Gajuwaka Steel Plant Main Road, Visakhapatnam",
+            "NAD Kotha Road Service Lane, Visakhapatnam",
+            "Seethammadhara North Extension, Visakhapatnam",
+            "MVP Colony Sector 4 Main Street, Visakhapatnam",
+            "Benz Circle Service Road, Vijayawada",
+            "MG Road Governorpet, Vijayawada",
+            "Pandit Nehru Bus Station Approach Road, Vijayawada",
+            "Kanaka Durga Temple Ghat Road, Vijayawada",
+            "Eluru Road Patamata, Vijayawada",
+            "Autonagar Gate No. 3 Avenue, Vijayawada",
+            "Labbipet 5th Cross Road, Vijayawada",
+            "Vuyyuru Main Bazaar Street, Vijayawada",
+            "Tirupati Railway Station Road, Tirupati",
+            "Alipiri Toll Gate Avenue, Tirupati",
+            "RTC Central Bus Stand Road, Tirupati",
+            "Leela Circle Market Street, Tirupati",
+            "Kapila Theertham Temple Road, Tirupati",
+            "Tiruchanoor Road 2nd Street, Tirupati",
+            "SV University Campus Road, Tirupati",
+            "Brodipet 1st Main Road, Guntur",
+            "Arundelpet 4th Line Street, Guntur",
+            "Collectorate Road Avenue, Guntur",
+            "Lakshmipuram Main Bazaar, Guntur",
+            "Kothapet Mirchi Yard Road, Guntur",
+            "Nallapadu Railway Station Road, Guntur",
+            "C Camp Police Station Road, Kurnool",
+            "Raj Vihar Center Street, Kurnool",
+            "Old Bus Stand Main Road, Kurnool",
+            "Nandyal Road Bypass Avenue, Kurnool",
+            "Trunk Road 2nd Cross Street, Nellore",
+            "Stone House Pet Main Road, Nellore",
+            "AVK Range Reddy Street, Nellore",
+            "Godavari Pushkar Ghat Road, Rajahmundry",
+            "Innespeta Main Bazaar Road, Rajahmundry",
+            "Danavaipeta 2nd Street, Rajahmundry",
+            "Main Road Clock Tower Street, Kakinada",
+            "Suryaraopeta 3rd Avenue, Kakinada",
+            "Beach Road Port Area Road, Kakinada",
+            "RTC Bus Stand Road, Kadapa",
+            "Seven Roads Circle Street, Kadapa",
+            "Tower Clock Center Street, Anantapur",
+            "Subash Road 2nd Street, Anantapur",
+
+            // Telangana
+            "Banjara Hills Road No. 12, Hyderabad",
+            "Jubilee Hills Checkpost Road, Hyderabad",
+            "Gachibowli Financial District Avenue, Hyderabad",
+            "Hitec City Cyber Towers Road, Hyderabad",
+            "Ameerpet Metro Station Street, Hyderabad",
+            "Secunderabad Railway Station Road, Hyderabad",
+            "Kukatpally Housing Board 4th Phase, Hyderabad",
+            "Madhapur Image Gardens Road, Hyderabad",
+            "Begumpet Main Road Avenue, Hyderabad",
+            "Hanamkonda Bus Station Road, Warangal",
+            "Adalath Circle Street, Warangal",
+            "Kazipet Railway Station Road, Warangal",
+            "Warangal Fort Road Avenue, Warangal",
+            "Bhadrakali Temple Street, Warangal",
+            "Bus Stand Main Road, Nizamabad",
+            "Collectorate Office Road, Nizamabad",
+            "Vinayak Nagar 2nd Street, Nizamabad",
+            "Collectorate Road, Karimnagar",
+            "Tower Circle Main Bazaar, Karimnagar",
+            "Zilla Parishad Road, Khammam",
+            "Wyra Road 2nd Cross Street, Khammam",
+
+            // Karnataka
+            "Koramangala 4th Block 8th Main Road, Bengaluru",
+            "MG Road Metro Station Avenue, Bengaluru",
+            "Indiranagar 100ft Road, Bengaluru",
+            "Silk Board Junction Service Road, Bengaluru",
+            "HSR Layout Sector 2 Main Street, Bengaluru",
+            "Majestic Railway Station Road, Bengaluru",
+            "Electronic City Phase 1 Road, Bengaluru",
+            "Whitefield Hoodi Junction Street, Bengaluru",
+            "Jayanagar 4th Block Shopping Avenue, Bengaluru",
+            "Mysore Palace North Gate Road, Mysuru",
+            "Sayyaji Rao Road, Mysuru",
+            "KRS Road 2nd Cross Street, Mysuru",
+            "Devaraja Market Street, Mysuru",
+            "Hampankatta Circle Road, Mangaluru",
+            "Kankanady Junction Street, Mangaluru",
+            "Balmatta Main Road Avenue, Mangaluru",
+            "Old Hubli Main Bazaar Road, Hubballi",
+            "Keshwapur Circle Street, Hubballi",
+            "Camp Area Gandhi Nagar Road, Belagavi",
+            "Tilakwadi Main Road Avenue, Belagavi",
+
+            // Tamil Nadu
+            "T. Nagar Usman Road, Chennai",
+            "Anna Nagar 2nd Avenue, Chennai",
+            "Marina Beach Lighthouse Road, Chennai",
+            "Velachery Phoenix Mall Service Road, Chennai",
+            "Guindy Industrial Estate 3rd Street, Chennai",
+            "Koyambedu Bus Terminal Road, Chennai",
+            "Mylapore Santhome High Road, Chennai",
+            "Adyar LB Road Cross Street, Chennai",
+            "RS Puram DB Road, Coimbatore",
+            "Gandhipuram Bus Stand Road, Coimbatore",
+            "Peelamedu Avinashi Road, Coimbatore",
+            "Meenakshi Temple East Gate Road, Madurai",
+            "Periyar Bus Stand Street, Madurai",
+            "Chatram Bus Stand Road, Trichy",
+            "Thillai Nagar 4th Cross Street, Trichy",
+            "Fairlands Main Road, Salem",
+            "New Bus Stand Approach Road, Salem",
+            "Vellore Fort Moat Road, Vellore",
+            "Gandhi Nagar 3rd East Street, Vellore",
+
+            // Kerala & Puducherry
+            "MG Road Ernakulam North, Kochi",
+            "Edappally Lulu Mall Service Road, Kochi",
+            "Fort Kochi Beach Princess Street, Kochi",
+            "Kakkanad Infopark Road, Kochi",
+            "Vyttila Mobility Hub Street, Kochi",
+            "East Fort Pazhavangadi Road, Trivandrum",
+            "Technopark Phase 1 Road, Trivandrum",
+            "Kowdiar Palace Avenue, Trivandrum",
+            "SM Street Sweet Water Road, Kozhikode",
+            "Mavoor Road Junction Street, Kozhikode",
+            "Thekkinkadu Swaroopam Round Road, Thrissur",
+            "White Town Rue Romain Rolland Street, Puducherry",
+            "Mission Street Bazaar Road, Puducherry",
+            "Promenade Beach Beach Road, Puducherry"
+        ];
+
+        // City data with coordinates and default landmarks
+        const cityData = {
+            india: { name: 'India', center: [22.9734, 78.6569], zoom: 5 },
+            jammu: { name: 'Jammu', center: [32.7266, 74.8570] },
+            delhi: { name: 'Delhi', center: [28.6139, 77.2090] },
+            amritsar: { name: 'Amritsar', center: [31.6340, 74.8723] },
+            gurugram: { name: 'Gurugram', center: [28.4595, 77.0266] },
+            noida: { name: 'Noida', center: [28.5355, 77.3910] },
+            agra: { name: 'Agra', center: [27.1767, 78.0081] },
+            varanasi: { name: 'Varanasi', center: [25.3176, 82.9739] },
+            mumbai: { name: 'Mumbai', center: [19.0760, 72.8777] },
+            pune: { name: 'Pune', center: [18.5204, 73.8567] },
+            jaipur: { name: 'Jaipur', center: [26.9124, 75.7873] },
+            lucknow: { name: 'Lucknow', center: [26.8467, 80.9462] },
+            chandigarh: { name: 'Chandigarh', center: [30.7333, 76.7794] },
+            dehradun: { name: 'Dehradun', center: [30.3165, 78.0322] },
+            shimla: { name: 'Shimla', center: [31.1048, 77.1734] },
+            srinagar: { name: 'Srinagar', center: [34.0837, 74.7973] },
+            leh: { name: 'Leh', center: [34.1526, 77.5771] },
+            ahmedabad: { name: 'Ahmedabad', center: [23.0225, 72.5714] },
+            vadodara: { name: 'Vadodara', center: [22.3072, 73.1812] },
+            rajkot: { name: 'Rajkot', center: [22.3039, 70.8022] },
+            surat: { name: 'Surat', center: [21.1702, 72.8311] },
+            nagpur: { name: 'Nagpur', center: [21.1458, 79.0882] },
+            nashik: { name: 'Nashik', center: [19.9975, 73.7898] },
+            bhopal: { name: 'Bhopal', center: [23.2599, 77.4126] },
+            jabalpur: { name: 'Jabalpur', center: [23.1815, 79.9864] },
+            indore: { name: 'Indore', center: [22.7196, 75.8577] },
+            raipur: { name: 'Raipur', center: [21.2514, 81.6296] },
+            kolkata: { name: 'Kolkata', center: [22.5726, 88.3639] },
+            patna: { name: 'Patna', center: [25.5941, 85.1376] },
+            ranchi: { name: 'Ranchi', center: [23.3441, 85.3096] },
+            bhubaneswar: { name: 'Bhubaneswar', center: [20.2961, 85.8245] },
+            cuttack: { name: 'Cuttack', center: [20.4625, 85.8830] },
+            jamshedpur: { name: 'Jamshedpur', center: [22.8046, 86.2029] },
+            siliguri: { name: 'Siliguri', center: [26.7271, 88.3953] },
+            guwahati: { name: 'Guwahati', center: [26.1445, 91.7362] },
+            shillong: { name: 'Shillong', center: [25.5788, 91.8933] },
+            imphal: { name: 'Imphal', center: [24.8170, 93.9368] },
+            agartala: { name: 'Agartala', center: [23.8315, 91.2868] },
+            aizawl: { name: 'Aizawl', center: [23.7271, 92.7176] },
+            kohima: { name: 'Kohima', center: [25.6751, 94.1086] },
+            itanagar: { name: 'Itanagar', center: [27.0844, 93.6053] },
+            gangtok: { name: 'Gangtok', center: [27.3389, 88.6065] },
+            panaji: { name: 'Panaji', center: [15.4909, 73.8278] },
+            portblair: { name: 'Port Blair', center: [11.6234, 92.7265] },
+            visakhapatnam: { name: 'Visakhapatnam (Vizag)', center: [17.6868, 83.2185] },
+            vijayawada: { name: 'Vijayawada', center: [16.5062, 80.6480] },
+            tirupati: { name: 'Tirupati', center: [13.6288, 79.4192] },
+            guntur: { name: 'Guntur', center: [16.3067, 80.4365] },
+            kurnool: { name: 'Kurnool', center: [15.8281, 78.0373] },
+            nellore: { name: 'Nellore', center: [14.4426, 79.9865] },
+            rajamahendravaram: { name: 'Rajamahendravaram', center: [17.0005, 81.7777] },
+            kakinada: { name: 'Kakinada', center: [16.9891, 82.2475] },
+            kadapa: { name: 'Kadapa', center: [14.4673, 78.8242] },
+            anantapur: { name: 'Anantapur', center: [14.6819, 77.6006] },
+            hyderabad: { name: 'Hyderabad', center: [17.3850, 78.4867] },
+            warangal: { name: 'Warangal', center: [18.0001, 79.5840] },
+            nizamabad: { name: 'Nizamabad', center: [18.6725, 78.0941] },
+            karimnagar: { name: 'Karimnagar', center: [18.4386, 79.1288] },
+            khammam: { name: 'Khammam', center: [17.2473, 80.1514] },
+            bengaluru: { name: 'Bengaluru', center: [12.9352, 77.6245] },
+            mysuru: { name: 'Mysuru', center: [12.2958, 76.6394] },
+            mangaluru: { name: 'Mangaluru', center: [12.9141, 74.8560] },
+            hubballi: { name: 'Hubballi-Dharwad', center: [15.3647, 75.1240] },
+            belagavi: { name: 'Belagavi', center: [15.8497, 74.4977] },
+            chennai: { name: 'Chennai', center: [13.0827, 80.2707] },
+            coimbatore: { name: 'Coimbatore', center: [11.0168, 76.9558] },
+            madurai: { name: 'Madurai', center: [9.9252, 78.1198] },
+            trichy: { name: 'Tiruchirappalli', center: [10.7905, 78.7047] },
+            salem: { name: 'Salem', center: [11.6643, 78.1460] },
+            vellore: { name: 'Vellore', center: [12.9165, 79.1325] },
+            kochi: { name: 'Kochi', center: [9.9312, 76.2673] },
+            trivandrum: { name: 'Thiruvananthapuram', center: [8.5241, 76.9366] },
+            kozhikode: { name: 'Kozhikode', center: [11.2588, 75.7804] },
+            thrissur: { name: 'Thrissur', center: [10.5276, 76.2144] },
+            puducherry: { name: 'Puducherry', center: [11.9416, 79.8083] },
+            tiruppur: { name: 'Tiruppur', center: [11.1085, 77.3411] },
+            kollam: { name: 'Kollam', center: [8.8932, 76.6141] },
+            jodhpur: { name: 'Jodhpur', center: [26.2389, 73.0243] },
+            udaipur: { name: 'Udaipur', center: [24.5854, 73.7125] }
+        };
+
+        const supportedLanguages = ['en', 'te', 'ta', 'kn', 'ml'];
+        const translationRows = [
+            ["India Super App", "భారతదేశ సూపర్ యాప్", "இந்தியாவின் சூப்பர் ஆப்", "ಭಾರತದ ಸೂಪರ್ ಆಪ್", "ഇന്ത്യയുടെ സൂപ്പർ ആപ്പ്"],
+            ["City / Region", "నగరం / ప్రాంతం", "நகரம் / பகுதி", "ನಗರ / ಪ್ರದೇಶ", "നഗരം / പ്രദേശം"],
+            ["Search any address, road or place in India", "భారతదేశంలో చిరునామా, రహదారి లేదా ప్రదేశాన్ని వెతకండి", "இந்தியாவில் முகவரி, சாலை அல்லது இடத்தைத் தேடுங்கள்", "ಭಾರತದಲ್ಲಿ ವಿಳಾಸ, ರಸ್ತೆ ಅಥವಾ ಸ್ಥಳ ಹುಡುಕಿ", "ഇന്ത്യയിൽ വിലാസം, റോഡ് അല്ലെങ്കിൽ സ്ഥലം തിരയുക"],
+            ["ARIDE - India's Ride & Delivery Super App", "ARIDE - భారతదేశ రైడ్ మరియు డెలివరీ సూపర్ యాప్", "ARIDE - இந்தியாவின் சவாரி மற்றும் டெலிவரி சூப்பர் ஆப்", "ARIDE - ಭಾರತದ ಸವಾರಿ ಮತ್ತು ಡೆಲಿವರಿ ಸೂಪರ್ ಆಪ್", "ARIDE - ഇന്ത്യയുടെ യാത്ര, ഡെലിവറി സൂപ്പർ ആപ്പ്"],
+            ["All India", "భారతదేశమంతా", "இந்தியா முழுவதும்", "ಭಾರತದಾದ್ಯಂತ", "ഇന്ത്യയിലുടനീളം"],
+            ["🇮🇳 All India", "🇮🇳 భారతదేశమంతా", "🇮🇳 இந்தியா முழுவதும்", "🇮🇳 ಭಾರತದಾದ್ಯಂತ", "🇮🇳 ഇന്ത്യയിലുടനീളം"],
+            ["North, Central & West India", "ఉత్తర, మధ్య మరియు పశ్చిమ భారతదేశం", "வடக்கு, மத்திய மற்றும் மேற்கு இந்தியா", "ಉತ್ತರ, ಮಧ್ಯ ಮತ್ತು ಪಶ್ಚಿಮ ಭಾರತ", "വടക്കൻ, മധ്യ, പടിഞ്ഞാറൻ ഇന്ത്യ"],
+            ["East & Northeast India", "తూర్పు మరియు ఈశాన్య భారతదేశం", "கிழக்கு மற்றும் வடகிழக்கு இந்தியா", "ಪೂರ್ವ ಮತ್ತು ಈಶಾನ್ಯ ಭಾರತ", "കിഴക്കൻ, വടക്കുകിഴക്കൻ ഇന്ത്യ"],
+            ["Andhra Pradesh", "ఆంధ్రప్రదేశ్", "ஆந்திரப் பிரதேசம்", "ಆಂಧ್ರ ಪ್ರದೇಶ", "ആന്ധ്രാപ്രദേശ്"],
+            ["Telangana", "తెలంగాణ", "தெலங்கானா", "ತೆಲಂಗಾಣ", "തെലങ്കാന"],
+            ["Karnataka", "కర్ణాటక", "கர்நாடகா", "ಕರ್ನಾಟಕ", "കർണാടക"],
+            ["Tamil Nadu", "తమిళనాడు", "தமிழ்நாடு", "ತಮಿಳುನಾಡು", "തമിഴ്നാട്"],
+            ["Kerala & Puducherry", "కేరళ మరియు పుదుచ్చేరి", "கேரளா மற்றும் புதுச்சேரி", "ಕೇರಳ ಮತ್ತು ಪುದುಚೇರಿ", "കേരളവും പുതുച്ചേരിയും"],
+            ["Book", "బుక్ చేయండి", "முன்பதிவு", "ಬುಕ್ ಮಾಡಿ", "ബുക്ക് ചെയ്യുക"],
+            ["Rides", "రైడ్‌లు", "சவாரிகள்", "ಸವಾರಿಗಳು", "യാത്രകൾ"],
+            ["Safety", "భద్రత", "பாதுகாப்பு", "ಸುರಕ್ಷತೆ", "സുരക്ഷ"],
+            ["SOS", "అత్యవసర సహాయం", "அவசர உதவி", "ತುರ್ತು ಸಹಾಯ", "അടിയന്തര സഹായം"],
+            ["India's Fastest & Most Affordable Ride", "భారతదేశంలో అత్యంత వేగవంతమైన, సరసమైన ప్రయాణం", "இந்தியாவின் அதிவேகமான, மலிவான சவாரி", "ಭಾರತದ ಅತ್ಯಂತ ವೇಗವಾದ, ಕೈಗೆಟುಕುವ ಸವಾರಿ", "ഇന്ത്യയിലെ ഏറ്റവും വേഗമേറിയതും ചെലവുകുറഞ്ഞതുമായ യാത്ര"],
+            ["Book a ride and get matched with an available driver.", "రైడ్ బుక్ చేసి అందుబాటులో ఉన్న డ్రైవర్‌తో జతకండి.", "சவாரியை முன்பதிவு செய்து கிடைக்கும் ஓட்டுநருடன் இணையுங்கள்.", "ಸವಾರಿ ಬುಕ್ ಮಾಡಿ ಲಭ್ಯವಿರುವ ಚಾಲಕರೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಿ.", "യാത്ര ബുക്ക് ചെയ്ത് ലഭ്യമായ ഡ്രൈവറുമായി ബന്ധപ്പെടുക."],
+            ["Bike Taxi", "బైక్ టాక్సీ", "பைக் டாக்ஸி", "ಬೈಕ್ ಟ್ಯಾಕ್ಸಿ", "ബൈക്ക് ടാക്സി"],
+            ["₹15/km • Fast", "₹15/కి.మీ • వేగవంతం", "₹15/கி.மீ • விரைவு", "₹15/ಕಿ.ಮೀ • ವೇಗ", "₹15/കി.മീ • വേഗം"],
+            ["Auto", "ఆటో", "ஆட்டோ", "ಆಟೋ", "ഓട്ടോ"],
+            ["No Bargain", "బేరాలు లేవు", "பேரம் பேச வேண்டாம்", "ಚೌಕಾಸಿ ಬೇಡ", "വിലപേശൽ വേണ്ട"],
+            ["Cab AC", "ఏసీ క్యాబ్", "ஏசி கார்", "ಎಸಿ ಕ್ಯಾಬ್", "എസി ക്യാബ്"],
+            ["Comfort", "సౌకర్యం", "வசதி", "ಆರಾಮ", "സൗകര്യം"],
+            ["Parcel", "పార్సెల్", "பார்சல்", "ಪಾರ್ಸೆಲ್", "പാഴ്സൽ"],
+            ["Instant", "తక్షణం", "உடனடி", "ತಕ್ಷಣ", "ഉടൻ"],
+            ["Pickup Street, Avenue or Landmark", "పికప్ వీధి, అవెన్యూ లేదా గుర్తింపు స్థలం", "பிக்கப் தெரு, சாலை அல்லது அடையாள இடம்", "ಪಿಕಪ್ ರಸ್ತೆ, ಅವೆನ್ಯೂ ಅಥವಾ ಗುರುತಿನ ಸ್ಥಳ", "പിക്കപ്പ് റോഡ്, അവന്യൂ അല്ലെങ്കിൽ അടയാളസ്ഥലം"],
+            ["Drop Street, Avenue or Landmark", "దిగాల్సిన వీధి, అవెన్యూ లేదా గుర్తింపు స్థలం", "இறங்கும் தெரு, சாலை அல்லது அடையாள இடம்", "ಡ್ರಾಪ್ ರಸ್ತೆ, ಅವೆನ್ಯೂ ಅಥವಾ ಗುರುತಿನ ಸ್ಥಳ", "ഡ്രോപ്പ് റോഡ്, അവന്യൂ അല്ലെങ്കിൽ അടയാളസ്ഥലം"],
+            ["mins away on street", "నిమిషాల్లో వీధికి చేరుకుంటారు", "நிமிடங்களில் தெருவை அடைவார்", "ನಿಮಿಷಗಳಲ್ಲಿ ರಸ್ತೆ ತಲುಪುತ್ತಾರೆ", "മിനിറ്റുകൾക്കുള്ളിൽ റോഡിലെത്തും"],
+            ["Apply", "వర్తింపజేయండి", "பயன்படுத்து", "ಅನ್ವಯಿಸಿ", "പ്രയോഗിക്കുക"],
+            ["Enter coupon (e.g. SOUTH50)", "కూపన్ నమోదు చేయండి (ఉదా. SOUTH50)", "கூப்பனை உள்ளிடவும் (எ.கா. SOUTH50)", "ಕೂಪನ್ ನಮೂದಿಸಿ (ಉದಾ. SOUTH50)", "കൂപ്പൺ നൽകുക (ഉദാ. SOUTH50)"],
+            ["South India Special Coupon Applied!", "దక్షిణ భారత ప్రత్యేక కూపన్ వర్తింపజేయబడింది!", "தென்னிந்திய சிறப்பு கூப்பன் பயன்படுத்தப்பட்டது!", "ದಕ್ಷಿಣ ಭಾರತದ ವಿಶೇಷ ಕೂಪನ್ ಅನ್ವಯಿಸಲಾಗಿದೆ!", "ദക്ഷിണേന്ത്യൻ പ്രത്യേക കൂപ്പൺ പ്രയോഗിച്ചു!"],
+            ["Payment Method", "చెల్లింపు విధానం", "கட்டண முறை", "ಪಾವತಿ ವಿಧಾನ", "പണമടയ്ക്കുന്ന രീതി"],
+            ["Email", "ఇమెయిల్", "மின்னஞ்சல்", "ಇಮೇಲ್", "ഇമെയിൽ"],
+            ["UPI, cards, more", "UPI, కార్డులు మరియు మరిన్ని", "UPI, கார்டுகள் மற்றும் பல", "UPI, ಕಾರ್ಡ್‌ಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು", "UPI, കാർഡുകൾ എന്നിവയും"],
+            ["UPI", "UPI", "UPI", "UPI", "UPI"],
+            ["Cash", "నగదు", "பணம்", "ನಗದು", "പണം"],
+            ["from Street Now", "వీధి నుంచే బుక్ చేయండి", "தெருவிலிருந்து இப்போதே", "ರಸ್ತೆಯಿಂದ ಈಗಲೇ", "റോഡിൽ നിന്ന് ഇപ്പോൾ"],
+            ["India", "భారతదేశం", "இந்தியா", "ಭಾರತ", "ഇന്ത്യ"],
+            ["Show all India", "భారతదేశం మొత్తాన్ని చూపు", "இந்தியா முழுவதையும் காட்டு", "ಭಾರತದಾದ್ಯಂತ ತೋರಿಸು", "ഇന്ത്യ മുഴുവൻ കാണിക്കുക"],
+            ["Recenter Map", "మ్యాప్‌ను మళ్లీ మధ్యలోకి తీసుకురండి", "வரைபடத்தை மையப்படுத்து", "ನಕ್ಷೆಯನ್ನು ಮಧ್ಯಕ್ಕೆ ಹೊಂದಿಸಿ", "മാപ്പ് വീണ്ടും മധ്യത്തിലാക്കുക"],
+            ["Zoom in", "పెంచి చూపు", "பெரிதாக்கு", "ಹಿಗ್ಗಿಸಿ", "വലുതാക്കുക"],
+            ["Zoom out", "చిన్నగా చూపు", "சிறிதாக்கு", "ಕುಗ್ಗಿಸಿ", "ചെറുതാക്കുക"],
+            ["Locating Nearby Captains on Street...", "సమీపంలోని వీధి కెప్టెన్‌లను వెతుకుతున్నాం...", "அருகிலுள்ள ஓட்டுநர்களைத் தேடுகிறது...", "ಹತ್ತಿರದ ರಸ್ತೆ ಕ್ಯಾಪ್ಟನ್‌ಗಳನ್ನು ಹುಡುಕುತ್ತಿದೆ...", "സമീപത്തുള്ള ക്യാപ്റ്റന്മാരെ തിരയുന്നു..."],
+            ["Scanning local arterial roads & avenues around", "చుట్టుపక్కల ప్రధాన రహదారులను పరిశీలిస్తున్నాం:", "அருகிலுள்ள முக்கிய சாலைகளைத் தேடுகிறது:", "ಸುತ್ತಮುತ್ತಲಿನ ಮುಖ್ಯ ರಸ್ತೆಗಳನ್ನು ಹುಡುಕುತ್ತಿದೆ:", "സമീപത്തെ പ്രധാന റോഡുകൾ തിരയുന്നു:"],
+            ["Pickup Street", "పికప్ వీధి", "பிக்கப் தெரு", "ಪಿಕಪ್ ರಸ್ತೆ", "പിക്കപ്പ് റോഡ്"],
+            ["Drop Point", "గమ్యస్థానం", "இறங்கும் இடம்", "ಡ್ರಾಪ್ ಸ್ಥಳ", "ഇറങ്ങേണ്ട സ്ഥലം"],
+            ["Estimated Fare", "అంచనా ఛార్జీ", "மதிப்பிடப்பட்ட கட்டணம்", "ಅಂದಾಜು ದರ", "ഏകദേശ നിരക്ക്"],
+            ["Cancel Request", "అభ్యర్థనను రద్దు చేయండి", "கோரிக்கையை ரத்துசெய்", "ವಿನಂತಿಯನ್ನು ರದ್ದುಮಾಡಿ", "അഭ്യർത്ഥന റദ്ദാക്കുക"],
+            ["Captain Arriving on Street", "కెప్టెన్ వీధికి వస్తున్నారు", "ஓட்டுநர் தெருவுக்கு வருகிறார்", "ಕ್ಯಾಪ್ಟನ್ ರಸ್ತೆ ತಲುಪುತ್ತಿದ್ದಾರೆ", "ക്യാപ്റ്റൻ റോഡിലെത്തുന്നു"],
+            ["Captain", "కెప్టెన్", "ஓட்டுநர்", "ಕ್ಯಾಪ್ಟನ್", "ക്യാപ്റ്റൻ"],
+            ["Chat", "చాట్", "அரட்டை", "ಚಾಟ್", "ചാറ്റ്"],
+            ["Call", "కాల్ చేయండి", "அழைக்கவும்", "ಕರೆ ಮಾಡಿ", "വിളിക്കുക"],
+            ["Start Trip OTP", "ప్రయాణ ప్రారంభ OTP", "பயணத் தொடக்க OTP", "ಪ್ರಯಾಣ ಪ್ರಾರಂಭ OTP", "യാത്ര തുടങ്ങാനുള്ള OTP"],
+            ["Share with captain on street", "వీధిలో ఉన్న కెప్టెన్‌తో పంచుకోండి", "தெருவில் உள்ள ஓட்டுநருடன் பகிரவும்", "ರಸ್ತೆಯಲ್ಲಿರುವ ಕ್ಯಾಪ್ಟನ್ ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಿ", "റോഡിലുള്ള ക്യാപ്റ്റനുമായി പങ്കിടുക"],
+            ["Live Street Directions", "ప్రత్యక్ష వీధి మార్గ సూచనలు", "நேரடி சாலை வழிகாட்டுதல்", "ನೇರ ರಸ್ತೆ ದಿಕ್ಕುಗಳು", "തത്സമയ റോഡ് നിർദ്ദേശങ്ങൾ"],
+            ["Take left from local lane into main arterial avenue", "స్థానిక సందు నుంచి ప్రధాన రహదారిలోకి ఎడమవైపు తిరగండి", "உள்ளூர் சந்திலிருந்து பிரதான சாலைக்கு இடதுபுறம் திரும்பவும்", "ಸ್ಥಳೀಯ ರಸ್ತೆಯಿಂದ ಮುಖ್ಯ ರಸ್ತೆಗೆ ಎಡಕ್ಕೆ ತಿರುಗಿ", "പ്രാദേശിക വഴിയിൽ നിന്ന് പ്രധാന റോഡിലേക്ക് ഇടത്തോട്ട് തിരിയുക"],
+            ["Emergency SOS / Share Trip", "అత్యవసర SOS / ప్రయాణాన్ని పంచుకోండి", "அவசர SOS / பயணத்தைப் பகிரவும்", "ತುರ್ತು SOS / ಪ್ರಯಾಣ ಹಂಚಿಕೊಳ್ಳಿ", "അടിയന്തര SOS / യാത്ര പങ്കിടുക"],
+            ["[Simulate] Complete Ride", "[డెమో] రైడ్‌ను ముగించండి", "[சோதனை] சவாரியை முடி", "[ಡೆಮೊ] ಸವಾರಿ ಪೂರ್ಣಗೊಳಿಸಿ", "[ഡെമോ] യാത്ര പൂർത്തിയാക്കുക"],
+            ["Captain GPS simulation: waiting for ride", "కెప్టెన్ GPS అనుకరణ: రైడ్ కోసం వేచి ఉంది", "கேப்டன் GPS உருவகப்படுத்துதல்: சவாரிக்காக காத்திருக்கிறது", "ಕ್ಯಾಪ್ಟನ್ GPS ಅನುಕರಣೆ: ಸವಾರಿಗಾಗಿ ಕಾಯುತ್ತಿದೆ", "ക്യാപ്റ്റൻ GPS സിമുലേഷൻ: യാത്രയ്ക്കായി കാത്തിരിക്കുന്നു"],
+            ["Sample captain coordinates update while this demo ride is active.", "ఈ డెమో రైడ్ సమయంలో నమూనా కెప్టెన్ స్థానాలు నవీకరించబడతాయి.", "இந்த டெமோ சவாரி நடக்கும்போது மாதிரி கேப்டன் இருப்பிடங்கள் புதுப்பிக்கப்படும்.", "ಈ ಡೆಮೋ ಸವಾರಿ ನಡೆಯುವಾಗ ಮಾದರಿ ಕ್ಯಾಪ್ಟನ್ ಸ್ಥಳಗಳು ನವೀಕರಿಸುತ್ತವೆ.", "ഈ ഡെമോ യാത്രയിൽ മാതൃകാ ക്യാപ്റ്റൻ സ്ഥാനങ്ങൾ പുതുക്കപ്പെടും"],
+            ["Captain GPS simulation: waiting for updates", "కెప్టెన్ GPS అనుకరణ: నవీకరణల కోసం వేచి ఉంది", "கேப்டன் GPS உருவகப்படுத்துதல்: புதுப்பிப்புகளுக்காக காத்திருக்கிறது", "ಕ್ಯಾಪ್ಟನ್ GPS ಅನುಕರಣೆ: ನವೀಕರಣಗಳಿಗಾಗಿ ಕಾಯುತ್ತಿದೆ", "ക്യാപ്റ്റൻ GPS സിമുലേഷൻ: അപ്‌ഡേറ്റുകൾക്കായി കാത്തിരിക്കുന്നു"],
+            ["Using the ARIDE demo ride server.", "ARIDE డెమో రైడ్ సర్వర్‌ను ఉపయోగిస్తోంది.", "ARIDE டெமோ சவாரி சேவையகத்தைப் பயன்படுத்துகிறது.", "ARIDE ಡೆಮೋ ಸವಾರಿ ಸರ್ವರ್ ಬಳಸಲಾಗುತ್ತಿದೆ.", "ARIDE ഡെമോ റൈഡ് സെർവർ ഉപയോഗിക്കുന്നു."],
+            ["Demo captain location updating", "డెమో కెప్టెన్ స్థానం నవీకరించబడుతోంది", "டெமோ கேப்டன் இருப்பிடம் புதுப்பிக்கப்படுகிறது", "ಡೆಮೋ ಕ್ಯಾಪ್ಟನ್ ಸ್ಥಳ ನವೀಕರிக்கப்படுகிறது", "ഡെമോ ക്യാപ്റ്റന്റെ സ്ഥാനം പുതുക്കുന്നു"],
+            ["mins", "నిమిషాలు", "நிமிடங்கள்", "ನಿಮಿಷಗಳು", "മിനിറ്റ്"],
+            ["mins away on street", "నిమిషాల్లో వీధికి చేరుకుంటారు", "நிமிடங்களில் தெருவை அடைவார்", "ನಿಮಿಷಗಳಲ್ಲಿ ರಸ್ತೆ ತಲುಪುತ್ತಾರೆ", "മിനിറ്റുകൾക്കുള്ളിൽ റോഡിലെത്തും"],
+            ["away on street", "వీధికి చేరుకుంటారు", "தெருவை அடைவார்", "ರಸ್ತೆ ತಲುಪುತ್ತಾರೆ", "റോഡിലെത്തും"],
+            ["⚡ 4 mins away on street", "⚡ 4 నిమిషాల్లో వీధికి చేరుకుంటారు", "⚡ 4 நிமிடங்களில் தெருவை அடைவார்", "⚡ 4 ನಿಮಿಷಗಳಲ್ಲಿ ರಸ್ತೆ ತಲುಪುತ್ತಾರೆ", "⚡ 4 മിനിറ്റിനുള്ളിൽ റോഡിലെത്തും"],
+            ["⚡ 6 mins away on street", "⚡ 6 నిమిషాల్లో వీధికి చేరుకుంటారు", "⚡ 6 நிமிடங்களில் தெருவை அடைவார்", "⚡ 6 ನಿಮಿಷಗಳಲ್ಲಿ ರಸ್ತೆ ತಲುಪುತ್ತಾರೆ", "⚡ 6 മിനിറ്റിനുള്ളിൽ റോഡിലെത്തും"],
+            ["⚡ 10 mins away on street", "⚡ 10 నిమిషాల్లో వీధికి చేరుకుంటారు", "⚡ 10 நிமிடங்களில் தெருவை அடைவார்", "⚡ 10 ನಿಮಿಷಗಳಲ್ಲಿ ರಸ್ತೆ ತಲುಪುತ್ತಾರೆ", "⚡ 10 മിനിറ്റിനുള്ളിൽ റോഡിലെത്തും"],
+            ["⚡ 12 mins away on street", "⚡ 12 నిమిషాల్లో వీధికి చేరుకుంటారు", "⚡ 12 நிமிடங்களில் தெருவை அடைவார்", "⚡ 12 ನಿಮಿಷಗಳಲ್ಲಿ ರಸ್ತೆ ತಲುಪುತ್ತಾರೆ", "⚡ 12 മിനിറ്റിനുള്ളിൽ റോഡിലെത്തും"],
+            ["Live rider GPS: connecting…", "రైడర్ ప్రత్యక్ష GPS: కనెక్ట్ అవుతోంది…", "ஓட்டுநர் நேரடி GPS: இணைக்கிறது…", "ರೈಡರ್ ನೇರ GPS: ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ…", "റൈഡർ തത്സമയ GPS: ബന്ധിപ്പിക്കുന്നു…"],
+            ["Live rider GPS: connected", "రైడర్ ప్రత్యక్ష GPS: కనెక్ట్ అయింది", "ஓட்டுநர் நேரடி GPS: இணைக்கப்பட்டது", "ರೈಡರ್ ನೇರ GPS: ಸಂಪರ್ಕಿಸಲಾಗಿದೆ", "റൈഡർ തത്സമയ GPS: ബന്ധിപ്പിച്ചു"],
+            ["Waiting for the rider location feed.", "రైడర్ స్థాన సమాచారం కోసం వేచి ఉంది.", "ஓட்டுநர் இருப்பிடத் தகவலுக்காகக் காத்திருக்கிறது.", "ರೈಡರ್ ಸ್ಥಳದ ಮಾಹಿತಿಗಾಗಿ ಕಾಯುತ್ತಿದೆ.", "റൈഡറുടെ ലൊക്കേഷൻ വിവരത്തിനായി കാത്തിരിക്കുന്നു."],
+            ["Waiting for the first valid location update.", "మొదటి సరైన స్థాన నవీకరణ కోసం వేచి ఉంది.", "முதல் சரியான இருப்பிடப் புதுப்பிப்புக்காகக் காத்திருக்கிறது.", "ಮೊದಲ ಸರಿಯಾದ ಸ್ಥಳದ ನವೀಕರಣಕ್ಕಾಗಿ ಕಾಯುತ್ತಿದೆ.", "ആദ്യത്തെ സാധുവായ ലൊക്കേഷൻ അപ്ഡേറ്റിനായി കാത്തിരിക്കുന്നു."],
+            ["Live rider GPS: invalid update", "రైడర్ ప్రత్యక్ష GPS: చెల్లని సమాచారం", "ஓட்டுநர் நேரடி GPS: தவறான தகவல்", "ರೈಡರ್ ನೇರ GPS: ಅಮಾನ್ಯ ಮಾಹಿತಿ", "റൈഡർ തത്സമയ GPS: അസാധുവായ അപ്ഡേറ്റ്"],
+            ["The GPS feed must send a JSON object with numeric lat and lng fields.", "GPS ఫీడ్‌లో సంఖ్యాత్మక lat, lng విలువలతో JSON ఉండాలి.", "GPS தகவலில் எண் lat, lng புலங்களுடன் JSON இருக்க வேண்டும்.", "GPS ಫೀಡ್‌ನಲ್ಲಿ ಸಂಖ್ಯಾತ್ಮಕ lat, lng ಇರುವ JSON ಇರಬೇಕು.", "GPS ഫീഡിൽ സംഖ്യയായ lat, lng ഉള്ള JSON ഉണ്ടായിരിക്കണം."],
+            ["Live rider GPS: invalid coordinates", "రైడర్ ప్రత్యక్ష GPS: చెల్లని కోఆర్డినేట్‌లు", "ஓட்டுநர் நேரடி GPS: தவறான ஆயத்தொலைவுகள்", "ರೈಡರ್ ನೇರ GPS: ಅಮಾನ್ಯ ನಿರ್ದೇಶಾಂಕಗಳು", "റൈഡർ തത്സമയ GPS: അസാധുവായ കോർഡിനേറ്റുകൾ"],
+            ["Location updates must contain valid coordinates within India.", "స్థాన నవీకరణల్లో భారతదేశంలోని సరైన కోఆర్డినేట్‌లు ఉండాలి.", "இருப்பிடப் புதுப்பிப்புகளில் இந்தியாவுக்குள் சரியான ஆயத்தொலைவுகள் இருக்க வேண்டும்.", "ಸ್ಥಳ ನವೀಕರಣಗಳಲ್ಲಿ ಭಾರತದೊಳಗಿನ ಸರಿಯಾದ ನಿರ್ದೇಶಾಂಕಗಳಿರಬೇಕು.", "ലൊക്കേഷൻ അപ്ഡേറ്റുകളിൽ ഇന്ത്യയ്ക്കുള്ളിലെ സാധുവായ കോർഡിനേറ്റുകൾ വേണം."],
+            ["Live rider GPS: connection error", "రైడర్ ప్రత్యక్ష GPS: కనెక్షన్ లోపం", "ஓட்டுநர் நேரடி GPS: இணைப்புப் பிழை", "ರೈಡರ್ ನೇರ GPS: ಸಂಪರ್ಕ ದೋಷ", "റൈഡർ തത്സമയ GPS: കണക്ഷൻ പിശക്"],
+            ["Check the configured WebSocket URL and server availability.", "WebSocket URL, సర్వర్ అందుబాటులో ఉన్నాయో తనిఖీ చేయండి.", "WebSocket URL மற்றும் சேவையகம் கிடைக்கிறதா எனச் சரிபார்க்கவும்.", "WebSocket URL ಮತ್ತು ಸರ್ವರ್ ಲಭ್ಯವಿದೆಯೇ ಪರಿಶೀಲಿಸಿ.", "WebSocket URL-ഉം സെർവറും ലഭ്യമാണോ എന്ന് പരിശോധിക്കുക."],
+            ["Live rider GPS: disconnected", "రైడర్ ప్రత్యక్ష GPS: కనెక్షన్ నిలిచింది", "ஓட்டுநர் நேரடி GPS: துண்டிக்கப்பட்டது", "ರೈಡರ್ ನೇರ GPS: ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡಿದೆ", "റൈഡർ തത്സമയ GPS: ബന്ധം വിച്ഛേദിച്ചു"],
+            ["Live rider GPS: updated", "రైడర్ ప్రత్యక్ష GPS: నవీకరించబడింది", "ஓட்டுநர் நேரடி GPS: புதுப்பிக்கப்பட்டது", "ರೈಡರ್ ನೇರ GPS: ನವೀಕರಿಸಲಾಗಿದೆ", "റൈഡർ തത്സമയ GPS: പുതുക്കി"],
+            ["The last rider position may be out of date.", "రైడర్ చివరి స్థానం తాజాది కాకపోవచ్చు.", "ஓட்டுநரின் கடைசி இருப்பிடம் புதுப்பிக்கப்பட்டதாக இல்லாமலிருக்கலாம்.", "ರೈಡರ್‌ನ ಕೊನೆಯ ಸ್ಥಳ ಹಳೆಯದಾಗಿರಬಹುದು.", "റൈഡറുടെ അവസാന സ്ഥാനം പുതുക്കിയതല്ലായിരിക്കാം."],
+            ["The rider location feed disconnected before sending a position.", "స్థానాన్ని పంపకముందే రైడర్ ఫీడ్ కనెక్షన్ నిలిచింది.", "இருப்பிடத்தை அனுப்பும் முன் ஓட்டுநர் தகவல் துண்டிக்கப்பட்டது.", "ಸ್ಥಳ ಕಳುಹಿಸುವ ಮೊದಲು ರೈಡರ್ ಫೀಡ್ ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡಿದೆ.", "സ്ഥാനം അയയ്ക്കുന്നതിന് മുമ്പ് റൈഡർ ഫീഡ് വിച്ഛേദിച്ചു."],
+            ["Live rider GPS: connection failed", "రైడర్ ప్రత్యక్ష GPS: కనెక్షన్ విఫలమైంది", "ஓட்டுநர் நேரடி GPS: இணைப்பு தோல்வியடைந்தது", "ರೈಡರ್ ನೇರ GPS: ಸಂಪರ್ಕ ವಿಫಲವಾಗಿದೆ", "റൈഡർ തത്സമയ GPS: കണക്ഷൻ പരാജയപ്പെട്ടു"],
+            ["Check the configured WebSocket URL.", "సెట్ చేసిన WebSocket URL‌ను తనిఖీ చేయండి.", "அமைக்கப்பட்ட WebSocket URL-ஐச் சரிபார்க்கவும்.", "ಹೊಂದಿಸಿದ WebSocket URL ಪರಿಶೀಲಿಸಿ.", "ക്രമീകരിച്ച WebSocket URL പരിശോധിക്കുക."],
+            ["Set RIDER_TRACKING_WS_URL to your WebSocket URL. Send JSON: {\"lat\":17.38,\"lng\":78.48,\"updatedAt\":\"ISO-8601\"}.", "RIDER_TRACKING_WS_URL‌లో మీ WebSocket URL‌ను సెట్ చేయండి. JSON పంపండి: {\"lat\":17.38,\"lng\":78.48,\"updatedAt\":\"ISO-8601\"}.", "RIDER_TRACKING_WS_URL-இல் WebSocket URL-ஐ அமைக்கவும். JSON அனுப்பவும்: {\"lat\":17.38,\"lng\":78.48,\"updatedAt\":\"ISO-8601\"}.", "RIDER_TRACKING_WS_URL-ನಲ್ಲಿ WebSocket URL ಹೊಂದಿಸಿ. JSON ಕಳುಹಿಸಿ: {\"lat\":17.38,\"lng\":78.48,\"updatedAt\":\"ISO-8601\"}.", "RIDER_TRACKING_WS_URL-ൽ WebSocket URL സജ്ജമാക്കുക. JSON അയയ്ക്കുക: {\"lat\":17.38,\"lng\":78.48,\"updatedAt\":\"ISO-8601\"}."],
+            ["South India Pass", "దక్షిణ భారత పాస్", "தென்னிந்திய பாஸ்", "ದಕ್ಷಿಣ ಭಾರತದ ಪಾಸ್", "ദക്ഷിണേന്ത്യ പാസ്"],
+            ["ARIDE Power Pass", "ARIDE పవర్ పాస్", "ARIDE பவர் பாஸ்", "ARIDE ಪವರ್ ಪಾಸ್", "ARIDE പവർ പാസ്"],
+            ["Enjoy flat discounts on every bike taxi, auto, and cab ride across AP, Telangana, Karnataka, Tamil Nadu, and Kerala with zero surge pricing.", "ఆంధ్రప్రదేశ్, తెలంగాణ, కర్ణాటక, తమిళనాడు, కేరళలో ప్రతి బైక్ టాక్సీ, ఆటో, క్యాబ్ ప్రయాణంపై స్థిర తగ్గింపులు పొందండి. అదనపు ధరలు లేవు.", "ஆந்திரா, தெலங்கானா, கர்நாடகா, தமிழ்நாடு, கேரளாவில் ஒவ்வொரு பைக் டாக்ஸி, ஆட்டோ, கார் சவாரிக்கும் நிலையான தள்ளுபடி. கூடுதல் கட்டணம் இல்லை.", "ಆಂಧ್ರ, ತೆಲಂಗಾಣ, ಕರ್ನಾಟಕ, ತಮಿಳುನಾಡು, ಕೇರಳದ ಪ್ರತಿ ಬೈಕ್ ಟ್ಯಾಕ್ಸಿ, ಆಟೋ, ಕ್ಯಾಬ್ ಸವಾರಿಗೆ ಸ್ಥಿರ ರಿಯಾಯಿತಿ. ಹೆಚ್ಚುವರಿ ದರವಿಲ್ಲ.", "ആന്ധ്ര, തെലങ്കാന, കർണാടക, തമിഴ്നാട്, കേരളം എന്നിവിടങ്ങളിലെ ബൈക്ക് ടാക്സി, ഓട്ടോ, ക്യാബ് യാത്രകൾക്ക് സ്ഥിരമായ ഇളവ്. അധിക നിരക്കില്ല."],
+            ["Active Passes", "యాక్టివ్ పాస్‌లు", "செயலில் உள்ள பாஸ்கள்", "ಸಕ್ರಿಯ ಪಾಸ್‌ಗಳು", "സജീവ പാസുകൾ"],
+            ["1 Active Pass", "1 యాక్టివ్ పాస్", "1 செயலில் உள்ள பாஸ்", "1 ಸಕ್ರಿಯ ಪಾಸ್", "1 സജീവ പാസ്"],
+            ["Total Saved", "మొత్తం ఆదా", "மொத்த சேமிப்பு", "ಒಟ್ಟು ಉಳಿತಾಯ", "ആകെ ലാഭം"],
+            ["Available Passes", "అందుబాటులో ఉన్న పాస్‌లు", "கிடைக்கும் பாஸ்கள்", "ಲಭ್ಯವಿರುವ ಪಾಸ್‌ಗಳು", "ലഭ്യമായ പാസുകൾ"],
+            ["Most Popular", "అత్యంత ప్రజాదరణ", "மிகவும் பிரபலம்", "ಅತ್ಯಂತ ಜನಪ್ರಿಯ", "ഏറ്റവും ജനപ്രിയം"],
+            ["/ 10 days", "/ 10 రోజులు", "/ 10 நாட்கள்", "/ 10 ದಿನಗಳು", "/ 10 ദിവസം"],
+            ["South Commuter Pass", "దక్షిణ కమ్యూటర్ పాస్", "தென்னிந்திய பயண பாஸ்", "ದಕ್ಷಿಣ ಪ್ರಯಾಣಿಕರ ಪಾಸ್", "ദക്ഷിണ യാത്രാ പാസ്"],
+            ["Save up to ₹30 on your next 20 rides across any South Indian city street.", "దక్షిణ భారత నగరాల్లో మీ తదుపరి 20 రైడ్‌లపై ₹30 వరకు ఆదా చేయండి.", "தென்னிந்திய நகரங்களில் உங்கள் அடுத்த 20 சவாரிகளில் ₹30 வரை சேமிக்கவும்.", "ದಕ್ಷಿಣ ಭಾರತದ ನಗರಗಳ ಮುಂದಿನ 20 ಸವಾರಿಗಳಲ್ಲಿ ₹30 ವರೆಗೆ ಉಳಿಸಿ.", "ദക്ഷിണേന്ത്യൻ നഗരങ്ങളിലെ അടുത്ത 20 യാത്രകളിൽ ₹30 വരെ ലാഭിക്കൂ."],
+            ["Flat ₹25 off per ride", "ప్రతి రైడ్‌పై ₹25 తగ్గింపు", "ஒவ்வொரு சவாரிக்கும் ₹25 தள்ளுபடி", "ಪ್ರತಿ ಸವಾರಿಗೆ ₹25 ರಿಯಾಯಿತಿ", "ഓരോ യാത്രയ്ക്കും ₹25 ഇളവ്"],
+            ["Zero peak hour surcharge", "పీక్ అవర్ అదనపు ఛార్జీ లేదు", "நெரிசல் நேர கூடுதல் கட்டணம் இல்லை", "ಪೀಕ್ ಅವರ್ ಹೆಚ್ಚುವರಿ ದರವಿಲ್ಲ", "തിരക്കേറിയ സമയത്തെ അധിക നിരക്കില്ല"],
+            ["Priority street pickup matching", "పికప్ కోసం ప్రాధాన్య సరిపోలిక", "பிக்கப்புக்கு முன்னுரிமை", "ಪಿಕಪ್‌ಗೆ ಆದ್ಯತೆಯ ಹೊಂದಾಣಿಕೆ", "പിക്കപ്പിന് മുൻഗണന"],
+            ["Buy Pass @ ₹49", "పాస్ కొనండి @ ₹49", "பாஸ் வாங்கவும் @ ₹49", "ಪಾಸ್ ಖರೀದಿಸಿ @ ₹49", "പാസ് വാങ്ങൂ @ ₹49"],
+            ["Super Saver", "సూపర్ సేవర్", "சூப்பர் சேவர்", "ಸೂಪರ್ ಸೇವರ್", "സൂപ്പർ സേവർ"],
+            ["/ 30 days", "/ 30 రోజులు", "/ 30 நாட்கள்", "/ 30 ದಿನಗಳು", "/ 30 ദിവസം"],
+            ["Monthly All-South Pass", "నెలవారీ దక్షిణ భారత పాస్", "மாதாந்திர தென்னிந்திய பாஸ்", "ಮಾಸಿಕ ದಕ್ಷಿಣ ಭಾರತ ಪಾಸ್", "പ്രതിമാസ ദക്ഷിണേന്ത്യ പാസ്"],
+            ["Ultimate monthly savings for regular office and college commuters.", "రోజూ ఆఫీసు, కాలేజీకి వెళ్లేవారి కోసం ఉత్తమ నెలవారీ ఆదా.", "அலுவலகம், கல்லூரி செல்பவர்களுக்கு சிறந்த மாதாந்திர சேமிப்பு.", "ನಿತ್ಯ ಕಚೇರಿ, ಕಾಲೇಜಿಗೆ ಹೋಗುವವರಿಗೆ ಅತ್ಯುತ್ತಮ ಮಾಸಿಕ ಉಳಿತಾಯ.", "ദിവസവും ഓഫീസിലേക്കും കോളേജിലേക്കും പോകുന്നവർക്ക് മികച്ച പ്രതിമാസ ലാഭം."],
+            ["Flat ₹35 off on 50 rides", "50 రైడ్‌లపై ₹35 స్థిర తగ్గింపు", "50 சவாரிகளுக்கு ₹35 நிலையான தள்ளுபடி", "50 ಸವಾರಿಗಳಿಗೆ ₹35 ರಿಯಾಯಿತಿ", "50 യാത്രകൾക്ക് ₹35 ഇളവ്"],
+            ["Free parcel delivery voucher (2x)", "ఉచిత పార్సెల్ డెలివరీ వోచర్ (2)", "இலவச பார்சல் டெலிவரி வவுச்சர் (2)", "ಉಚಿತ ಪಾರ್ಸೆಲ್ ಡೆಲಿವರಿ ವೋಚರ್ (2)", "സൗജന്യ പാഴ്സൽ ഡെലിവറി വൗച്ചർ (2)"],
+            ["24/7 Regional VIP support", "24/7 ప్రాంతీయ VIP సహాయం", "24/7 பிராந்திய VIP உதவி", "24/7 ಪ್ರಾದೇಶಿಕ VIP ಬೆಂಬಲ", "24/7 പ്രാദേശിക VIP സഹായം"],
+            ["Buy Pass @ ₹99", "పాస్ కొనండి @ ₹99", "பாஸ் வாங்கவும் @ ₹99", "ಪಾಸ್ ಖರೀದಿಸಿ @ ₹99", "പാസ് വാങ്ങൂ @ ₹99"],
+            ["My Recent Rides", "నా ఇటీవలి రైడ్‌లు", "எனது சமீபத்திய சவாரிகள்", "ನನ್ನ ಇತ್ತೀಚಿನ ಸವಾರಿಗಳು", "എന്റെ സമീപകാല യാത്രകൾ"],
+            ["ARI-7721 • Yesterday, 06:15 PM", "ARI-7721 • నిన్న, 06:15 PM", "ARI-7721 • நேற்று, 06:15 PM", "ARI-7721 • ನಿನ್ನೆ, 06:15 PM", "ARI-7721 • ഇന്നലെ, 06:15 PM"],
+            ["ARI-5192 • 04 Oct 2026, 09:30 AM", "ARI-5192 • 04 అక్టోబర్ 2026, 09:30 AM", "ARI-5192 • 04 அக்டோபர் 2026, 09:30 AM", "ARI-5192 • 04 ಅಕ್ಟೋಬರ್ 2026, 09:30 AM", "ARI-5192 • 04 ഒക്ടോബർ 2026, 09:30 AM"],
+            ["Completed", "పూర్తయింది", "முடிந்தது", "ಪೂರ್ಣಗೊಂಡಿದೆ", "പൂർത്തിയായി"],
+            ["Rebook", "మళ్లీ బుక్ చేయండి", "மீண்டும் முன்பதிவு", "ಮತ್ತೆ ಬುಕ್ ಮಾಡಿ", "വീണ്ടും ബുക്ക് ചെയ്യുക"],
+            ["Safety First", "భద్రతే ముఖ్యం", "பாதுகாப்பே முதன்மை", "ಸುರಕ್ಷತೆಯೇ ಮೊದಲು", "സുരക്ഷയ്ക്ക് മുൻഗണന"],
+            ["Your Safety Across Every South Indian Street", "దక్షిణ భారతదేశంలోని ప్రతి వీధిలో మీ భద్రత", "தென்னிந்தியாவின் ஒவ்வொரு தெருவிலும் உங்கள் பாதுகாப்பு", "ದಕ್ಷಿಣ ಭಾರತದ ಪ್ರತಿ ರಸ್ತೆಯಲ್ಲೂ ನಿಮ್ಮ ಸುರಕ್ಷತೆ", "ദക്ഷിണേന്ത്യയിലെ ഓരോ റോഡിലും നിങ്ങളുടെ സുരക്ഷ"],
+            ["We ensure strict background checks for all captains, helmet sanitation before every ride, and 24/7 emergency response.", "ప్రతి కెప్టెన్‌కు కఠినమైన నేపథ్య తనిఖీలు, ప్రతి రైడ్‌కు ముందు హెల్మెట్ శుభ్రత, 24/7 అత్యవసర సహాయం అందిస్తాం.", "அனைத்து ஓட்டுநர்களுக்கும் கடுமையான பின்னணி சரிபார்ப்பு, ஒவ்வொரு சவாரிக்கும் முன் தலைக்கவச சுத்தம், 24/7 அவசர உதவி வழங்குகிறோம்.", "ಎಲ್ಲಾ ಕ್ಯಾಪ್ಟನ್‌ಗಳ ಹಿನ್ನೆಲೆ ಪರಿಶೀಲನೆ, ಪ್ರತಿ ಸವಾರಿಗೂ ಮೊದಲು ಹೆಲ್ಮೆಟ್ ಸ್ವಚ್ಛತೆ, 24/7 ತುರ್ತು ನೆರವು ಒದಗಿಸುತ್ತೇವೆ.", "എല്ലാ ക്യാപ്റ്റന്മാർക്കും പശ്ചാത്തല പരിശോധന, ഓരോ യാത്രയ്ക്കും മുമ്പ് ഹെൽമെറ്റ് ശുചീകരണം, 24/7 അടിയന്തര സഹായം ഉറപ്പാക്കുന്നു."],
+            ["Trigger Emergency SOS", "అత్యవసర SOS ప్రారంభించండి", "அவசர SOS-ஐ செயல்படுத்து", "ತುರ್ತು SOS ಪ್ರಾರಂಭಿಸಿ", "അടിയന്തര SOS പ്രവർത്തിപ്പിക്കുക"],
+            ["Helmet Hygiene", "హెల్మెట్ పరిశుభ్రత", "தலைக்கவச சுகாதாரம்", "ಹೆಲ್ಮೆಟ್ ಸ್ವಚ್ಛತೆ", "ഹെൽമെറ്റ് ശുചിത്വം"],
+            ["Sanitized clean hairnets & helmets provided for every passenger.", "ప్రతి ప్రయాణికుడికి శుభ్రపరిచిన హెయిర్‌నెట్, హెల్మెట్ అందిస్తాం.", "ஒவ்வொரு பயணிக்கும் சுத்தம் செய்யப்பட்ட ஹேர் நெட் மற்றும் தலைக்கவசம் வழங்கப்படும்.", "ಪ್ರತಿ ಪ್ರಯಾಣಿಕರಿಗೆ ಸ್ವಚ್ಛ ಹೆರ್‌ನೆಟ್ ಮತ್ತು ಹೆಲ್ಮೆಟ್ ನೀಡಲಾಗುತ್ತದೆ.", "ഓരോ യാത്രക്കാരനും വൃത്തിയാക്കിയ ഹെയർനെറ്റും ഹെൽമെറ്റും നൽകുന്നു."],
+            ["Verified Captains", "ధృవీకరించిన కెప్టెన్‌లు", "சரிபார்க்கப்பட்ட ஓட்டுநர்கள்", "ಪರಿಶೀಲಿಸಿದ ಕ್ಯಾಪ್ಟನ್‌ಗಳು", "പരിശോധിച്ച ക്യാപ്റ്റന്മാർ"],
+            ["100% police verification and local background checks for all drivers.", "అన్ని డ్రైవర్లకు 100% పోలీస్ వెరిఫికేషన్, స్థానిక నేపథ్య తనిఖీలు.", "அனைத்து ஓட்டுநர்களுக்கும் 100% காவல் சரிபார்ப்பு மற்றும் உள்ளூர் பின்னணி ஆய்வு.", "ಎಲ್ಲಾ ಚಾಲಕರಿಗೂ 100% ಪೊಲೀಸ್ ಪರಿಶೀಲನೆ ಮತ್ತು ಸ್ಥಳೀಯ ಹಿನ್ನೆಲೆ ತಪಾಸಣೆ.", "എല്ലാ ഡ്രൈവർമാർക്കും 100% പോലീസ് പരിശോധനയും പ്രാദേശിക പശ്ചാത്തല പരിശോധനയും."],
+            ["24/7 Support", "24/7 సహాయం", "24/7 ஆதரவு", "24/7 ಬೆಂಬಲ", "24/7 സഹായം"],
+            ["Dedicated safety response team available instantly via app in local languages.", "స్థానిక భాషల్లో యాప్ ద్వారా భద్రతా బృందం వెంటనే అందుబాటులో ఉంటుంది.", "உள்ளூர் மொழிகளில் செயலி வழியாக பாதுகாப்புக் குழு உடனடியாக உதவும்.", "ಸ್ಥಳೀಯ ಭಾಷೆಗಳಲ್ಲಿ ಆ್ಯಪ್ ಮೂಲಕ ಸುರಕ್ಷತಾ ತಂಡ ತಕ್ಷಣ ಲಭ್ಯವಿದೆ.", "പ്രാദേശിക ഭാഷകളിൽ ആപ്പ് വഴി സുരക്ഷാ സംഘം ഉടൻ ലഭ്യമാണ്."],
+            ["ARIDE Coins Balance", "ARIDE కాయిన్‌ల నిల్వ", "ARIDE நாணய இருப்பு", "ARIDE ಕಾಯಿನ್‌ಗಳ ಬಾಕಿ", "ARIDE കോയിൻ ബാലൻസ്"],
+            ["Coins", "కాయిన్‌లు", "நாணயங்கள்", "ಕಾಯಿನ್‌ಗಳು", "നാണയങ്ങൾ"],
+            ["1 Coin = ₹1 redeemable instantly on any ride.", "1 కాయిన్ = ₹1; ఏ రైడ్‌లోనైనా వెంటనే ఉపయోగించవచ్చు.", "1 நாணயம் = ₹1; எந்தச் சவாரியிலும் உடனே பயன்படுத்தலாம்.", "1 ಕಾಯಿನ್ = ₹1; ಯಾವುದೇ ಸವಾರಿಯಲ್ಲಿ ತಕ್ಷಣ ಬಳಸಬಹುದು.", "1 കോയിൻ = ₹1; ഏത് യാത്രയിലും ഉടൻ ഉപയോഗിക്കാം."],
+            ["+ Add ₹50 Bonus Coins", "+ ₹50 బోనస్ కాయిన్‌లు జోడించండి", "+ ₹50 போனஸ் நாணயங்களைச் சேர்க்கவும்", "+ ₹50 ಬೋನಸ್ ಕಾಯಿನ್‌ಗಳನ್ನು ಸೇರಿಸಿ", "+ ₹50 ബോണസ് കോയിനുകൾ ചേർക്കുക"],
+            ["Refer a friend in your street & earn ₹50", "మీ వీధిలోని స్నేహితుడిని పరిచయం చేసి ₹50 సంపాదించండి", "உங்கள் தெரு நண்பரை அறிமுகப்படுத்தி ₹50 பெறுங்கள்", "ನಿಮ್ಮ ರಸ್ತೆಯ ಸ್ನೇಹಿತರನ್ನು ಪರಿಚಯಿಸಿ ₹50 ಗಳಿಸಿ", "സുഹൃത്തിനെ പരിചയപ്പെടുത്തി ₹50 നേടൂ"],
+            ["Share your referral code with friends. When they take their first ride, you both get ₹50 in ARIDE Coins!", "మీ రిఫరల్ కోడ్‌ను స్నేహితులతో పంచుకోండి. వారు మొదటి రైడ్ చేసినప్పుడు మీ ఇద్దరికీ ₹50 ARIDE కాయిన్‌లు!", "உங்கள் பரிந்துரைக் குறியீட்டை நண்பர்களுடன் பகிரவும். அவர்கள் முதல் சவாரி செய்யும்போது இருவருக்கும் ₹50 ARIDE நாணயங்கள்!", "ನಿಮ್ಮ ರೆಫರಲ್ ಕೋಡ್ ಸ್ನೇಹಿತರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ. ಅವರು ಮೊದಲ ಸವಾರಿ ಮಾಡಿದಾಗ ಇಬ್ಬರಿಗೂ ₹50 ARIDE ಕಾಯಿನ್‌ಗಳು!", "റഫറൽ കോഡ് സുഹൃത്തുക്കളുമായി പങ്കിടൂ. അവർ ആദ്യ യാത്ര ചെയ്യുമ്പോൾ ഇരുവർക്കും ₹50 ARIDE കോയിനുകൾ!"],
+            ["Copy Code", "కోడ్ కాపీ చేయండి", "குறியீட்டை நகலெடு", "ಕೋಡ್ ನಕಲಿಸಿ", "കോഡ് പകർത്തുക"],
+            ["Emergency SOS Assistance", "అత్యవసర SOS సహాయం", "அவசர SOS உதவி", "ತುರ್ತು SOS ನೆರವು", "അടിയന്തര SOS സഹായം"],
+            ["Use this only in case of emergency. Your live GPS location will be shared immediately with police authorities and emergency contacts.", "అత్యవసర పరిస్థితిలో మాత్రమే ఉపయోగించండి. మీ ప్రత్యక్ష GPS స్థానాన్ని వెంటనే పోలీసులకు, అత్యవసర పరిచయాలకు పంపిస్తాం.", "அவசரநிலையில் மட்டும் பயன்படுத்தவும். உங்கள் நேரடி GPS இருப்பிடம் உடனடியாக காவல்துறை மற்றும் அவசரத் தொடர்புகளுடன் பகிரப்படும்.", "ತುರ್ತು ಸಂದರ್ಭದಲ್ಲಿ ಮಾತ್ರ ಬಳಸಿ. ನಿಮ್ಮ ನೇರ GPS ಸ್ಥಳವನ್ನು ತಕ್ಷಣ ಪೊಲೀಸರು ಮತ್ತು ತುರ್ತು ಸಂಪರ್ಕಗಳೊಂದಿಗೆ ಹಂಚಲಾಗುತ್ತದೆ.", "അടിയന്തരാവസ്ഥയിൽ മാത്രം ഉപയോഗിക്കുക. നിങ്ങളുടെ തത്സമയ GPS സ്ഥാനം ഉടൻ പോലീസിനും അടിയന്തര ബന്ധങ്ങൾക്കും പങ്കിടും."],
+            ["Call Police (112)", "పోలీసులకు కాల్ చేయండి (112)", "காவல்துறையை அழைக்கவும் (112)", "ಪೊಲೀಸರಿಗೆ ಕರೆ ಮಾಡಿ (112)", "പോലീസിനെ വിളിക്കുക (112)"],
+            ["ARIDE 24/7 Safety Helpline", "ARIDE 24/7 భద్రతా హెల్ప్‌లైన్", "ARIDE 24/7 பாதுகாப்பு உதவி எண்", "ARIDE 24/7 ಸುರಕ್ಷತಾ ಸಹಾಯವಾಣಿ", "ARIDE 24/7 സുരക്ഷാ ഹെൽപ്പ്‌ലൈൻ"],
+            ["Dismiss / Close", "మూసివేయండి", "மூடு", "ಮುಚ್ಚಿ", "അടയ്ക്കുക"],
+            ["Rate Your Ride", "మీ రైడ్‌కు రేటింగ్ ఇవ్వండి", "உங்கள் சவாரிக்கு மதிப்பிடுங்கள்", "ನಿಮ್ಮ ಸವಾರಿಗೆ ರೇಟಿಂಗ್ ನೀಡಿ", "നിങ്ങളുടെ യാത്രയ്ക്ക് റേറ്റിംഗ് നൽകുക"],
+            ["How was your trip with", "మీ ప్రయాణం ఎలా ఉంది:", "உங்கள் பயணம் எப்படி இருந்தது:", "ನಿಮ್ಮ ಪ್ರಯಾಣ ಹೇಗಿತ್ತು:", "നിങ്ങളുടെ യാത്ര എങ്ങനെയുണ്ടായിരുന്നു:"],
+            ["Add a Tip for Captain", "కెప్టెన్‌కు టిప్ జోడించండి", "ஓட்டுநருக்கு கூடுதல் தொகை", "ಕ್ಯಾಪ್ಟನ್‌ಗೆ ಟಿಪ್ ನೀಡಿ", "ക്യാപ്റ്റന് ടിപ്പ് നൽകുക"],
+            ["None", "ఏదీ లేదు", "வேண்டாம்", "ಬೇಡ", "വേണ്ട"],
+            ["Submit & Complete", "సమర్పించి ముగించండి", "சமர்ப்பித்து முடிக்கவும்", "ಸಲ್ಲಿಸಿ ಪೂರ್ಣಗೊಳಿಸಿ", "സമർപ്പിച്ച് പൂർത്തിയാക്കുക"],
+            ["● Online on Street", "● వీధిలో ఆన్‌లైన్‌లో ఉన్నారు", "● தெருவில் ஆன்லைனில் உள்ளார்", "● ರಸ್ತೆಯಲ್ಲಿ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿದ್ದಾರೆ", "● റോഡിൽ ഓൺലൈനിലാണ്"],
+            ["Sir, I have reached your street entrance near the main junction!", "సార్, ప్రధాన కూడలి దగ్గర మీ వీధి ప్రవేశద్వారానికి చేరుకున్నాను!", "ஐயா, முக்கிய சந்திப்புக்கு அருகிலுள்ள உங்கள் தெரு நுழைவாயிலுக்கு வந்துவிட்டேன்!", "ಸರ್, ಮುಖ್ಯ ಜಂಕ್ಷನ್ ಬಳಿಯ ನಿಮ್ಮ ರಸ್ತೆ ಪ್ರವೇಶದ್ವಾರಕ್ಕೆ ಬಂದಿದ್ದೇನೆ!", "സാർ, പ്രധാന ജംഗ്ഷനടുത്തുള്ള നിങ്ങളുടെ റോഡ് പ്രവേശന കവാടത്തിലെത്തി!"],
+            ["Type a message...", "సందేశం టైప్ చేయండి...", "செய்தியைத் தட்டச்சு செய்யவும்...", "ಸಂದೇಶ ಟೈಪ್ ಮಾಡಿ...", "സന്ദേശം ടൈപ്പ് ചെയ്യുക..."],
+            ["Connecting secure call...", "సురక్షిత కాల్‌కు కనెక్ట్ అవుతోంది...", "பாதுகாப்பான அழைப்புடன் இணைக்கிறது...", "ಸುರಕ್ಷಿತ ಕರೆಯನ್ನು ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ...", "സുരക്ഷിത കോളിലേക്ക് ബന്ധിപ്പിക്കുന്നു..."],
+            ["Wallet (", "వాలెట్ (", "வாலட் (", "ವಾಲೆಟ್ (", "വാലറ്റ് ("],
+            ["Searching Indian addresses…", "భారతదేశ చిరునామాలను వెతుకుతోంది…", "இந்திய முகவரிகளைத் தேடுகிறது…", "ಭಾರತೀಯ ವಿಳಾಸಗಳನ್ನು ಹುಡುಕುತ್ತಿದೆ…", "ഇന്ത്യൻ വിലാസങ്ങൾ തിരയുന്നു…"],
+            ["No Indian locations found. Try a city, road, or landmark.", "భారతదేశంలో స్థలాలు కనబడలేదు. నగరం, రహదారి లేదా గుర్తింపు స్థలాన్ని ప్రయత్నించండి.", "இந்திய இடங்கள் எதுவும் கிடைக்கவில்லை. நகரம், சாலை அல்லது அடையாள இடத்தை முயற்சிக்கவும்.", "ಭಾರತದಲ್ಲಿ ಸ್ಥಳಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ನಗರ, ರಸ್ತೆ ಅಥವಾ ಗುರುತಿನ ಸ್ಥಳವನ್ನು ಪ್ರಯತ್ನಿಸಿ.", "ഇന്ത്യയിലെ സ്ഥലങ്ങൾ കണ്ടെത്തിയില്ല. നഗരം, റോഡ് അല്ലെങ്കിൽ അടയാളസ്ഥലം തിരയുക."],
+            ["This location did not return valid map coordinates.", "ఈ స్థలానికి సరైన మ్యాప్ కోఆర్డినేట్‌లు లభించలేదు.", "இந்த இடத்திற்கான சரியான வரைபட ஆயத்தொலைவுகள் கிடைக்கவில்லை.", "ಈ ಸ್ಥಳಕ್ಕೆ ಸರಿಯಾದ ನಕ್ಷೆ ನಿರ್ದೇಶಾಂಕಗಳು ಲಭ್ಯವಾಗಿಲ್ಲ.", "ഈ സ്ഥലത്തിന് ശരിയായ മാപ്പ് കോർഡിനേറ്റുകൾ ലഭിച്ചില്ല."],
+            ["Address search failed. Check your connection and try again.", "చిరునామా శోధన విఫలమైంది. ఇంటర్నెట్‌ను తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.", "முகவரி தேடல் தோல்வியடைந்தது. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.", "ವಿಳಾಸ ಹುಡುಕಾಟ ವಿಫಲವಾಗಿದೆ. ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.", "വിലാസ തിരയൽ പരാജയപ്പെട്ടു. കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക."],
+            ["Showing the India-wide map. Search any Indian address or city.", "భారతదేశం మొత్తం మ్యాప్ చూపుతోంది. భారతదేశంలోని చిరునామా లేదా నగరాన్ని వెతకండి.", "இந்தியா முழுவதற்குமான வரைபடம் காட்டப்படுகிறது. இந்திய முகவரி அல்லது நகரத்தைத் தேடுங்கள்.", "ಭಾರತದಾದ್ಯಂತದ ನಕ್ಷೆ ತೋರಿಸಲಾಗುತ್ತಿದೆ. ಭಾರತದ ವಿಳಾಸ ಅಥವಾ ನಗರವನ್ನು ಹುಡುಕಿ.", "ഇന്ത്യയിലുടനീളമുള്ള മാപ്പ് കാണിക്കുന്നു. ഇന്ത്യൻ വിലാസമോ നഗരമോ തിരയുക."],
+            ["Switched to ", "కి మార్చబడింది: ", "க்கு மாற்றப்பட்டது: ", "ಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗಿದೆ: ", "ലേക്ക് മാറ്റി: "],
+            [" successfully.", " విజయవంతంగా.", " வெற்றிகரமாக.", " ಯಶಸ್ವಿಯಾಗಿ.", " വിജയകരമായി."],
+            ["Language updated.", "భాష మార్చబడింది.", "மொழி மாற்றப்பட்டது.", "ಭಾಷೆ ಬದಲಾಗಿದೆ.", "ഭാഷ മാറ്റി."],
+            ["Road route unavailable. Please try again shortly.", "రోడ్డు మార్గం అందుబాటులో లేదు. కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.", "சாலை வழி கிடைக்கவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.", "ರಸ್ತೆ ಮಾರ್ಗ ಲಭ್ಯವಿಲ್ಲ. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.", "റോഡ് റൂട്ട് ലഭ്യമല്ല. അല്പസമയത്തിന് ശേഷം വീണ്ടും ശ്രമിക്കുക."],
+            ["Road route unavailable; rider GPS will still appear when connected.", "రోడ్డు మార్గం అందుబాటులో లేదు; GPS కనెక్ట్ అయినప్పుడు రైడర్ కనిపిస్తారు.", "சாலை வழி கிடைக்கவில்லை; GPS இணைக்கப்பட்டதும் ஓட்டுநர் இருப்பிடம் தோன்றும்.", "ರಸ್ತೆ ಮಾರ್ಗ ಲಭ್ಯವಿಲ್ಲ; GPS ಸಂಪರ್ಕಿಸಿದಾಗ ರೈಡರ್ ಕಾಣಿಸುತ್ತಾರೆ.", "റോഡ് റൂട്ട് ലഭ്യമല്ല; GPS ബന്ധിപ്പിക്കുമ്പോൾ റൈഡറെ കാണാം."],
+            ["Location services are not available in this browser.", "ఈ బ్రౌజర్‌లో స్థాన సేవలు అందుబాటులో లేవు.", "இந்த உலாவியில் இருப்பிடச் சேவைகள் கிடைக்கவில்லை.", "ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಸ್ಥಳ ಸೇವೆಗಳು ಲಭ್ಯವಿಲ್ಲ.", "ഈ ബ്രൗസറിൽ ലൊക്കേഷൻ സേവനങ്ങൾ ലഭ്യമല്ല."],
+            ["Allow location access to use your current position.", "మీ ప్రస్తుత స్థానాన్ని ఉపయోగించడానికి లొకేషన్ అనుమతించండి.", "உங்கள் தற்போதைய இருப்பிடத்தைப் பயன்படுத்த இருப்பிட அணுகலை அனுமதிக்கவும்.", "ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸ್ಥಳ ಬಳಸಲು ಸ್ಥಳ ಅನುಮತಿಸಿ.", "നിങ്ങളുടെ നിലവിലെ സ്ഥാനം ഉപയോഗിക്കാൻ ലൊക്കേഷൻ അനുവദിക്കുക."],
+            ["Could not get your current location.", "మీ ప్రస్తుత స్థానాన్ని పొందలేకపోయాం.", "உங்கள் தற்போதைய இருப்பிடத்தைப் பெற முடியவில்லை.", "ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸ್ಥಳ ಪಡೆಯಲಾಗಲಿಲ್ಲ.", "നിങ്ങളുടെ നിലവിലെ സ്ഥാനം ലഭിച്ചില്ല."],
+            ["Pickup set to your current location.", "పికప్ మీ ప్రస్తుత స్థానానికి సెట్ చేయబడింది.", "பிக்கப் உங்கள் தற்போதைய இருப்பிடத்தில் அமைக்கப்பட்டது.", "ಪಿಕಪ್ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸ್ಥಳಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ.", "പിക്കപ്പ് നിങ്ങളുടെ നിലവിലെ സ്ഥാനത്ത് സജ്ജമാക്കി."],
+            ["Choose both pickup and drop from the India address search results.", "భారతదేశ చిరునామా శోధన ఫలితాల నుంచి పికప్, డ్రాప్ రెండింటినీ ఎంచుకోండి.", "இந்திய முகவரி தேடல் முடிவுகளில் பிக்கப் மற்றும் இறங்கும் இடத்தைத் தேர்ந்தெடுக்கவும்.", "ಭಾರತದ ವಿಳಾಸ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳಿಂದ ಪಿಕಪ್ ಮತ್ತು ಡ್ರಾಪ್ ಆಯ್ಕೆಮಾಡಿ.", "ഇന്ത്യൻ വിലാസ തിരയൽ ഫലങ്ങളിൽ നിന്ന് പിക്കപ്പും ഡ്രോപ്പും തിരഞ്ഞെടുക്കുക."],
+            ["Booking cancelled.", "బుకింగ్ రద్దు చేయబడింది.", "முன்பதிவு ரத்துசெய்யப்பட்டது.", "ಬುಕಿಂಗ್ ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ.", "ബുക്കിംഗ് റദ്ദാക്കി."],
+            ["Captain assigned on your street! Srinu is arriving.", "మీ వీధికి కెప్టెన్ కేటాయించబడ్డారు! శ్రీను వస్తున్నారు.", "உங்கள் தெருவுக்கு ஓட்டுநர் ஒதுக்கப்பட்டார்! ஸ்ரீனு வருகிறார்.", "ನಿಮ್ಮ ರಸ್ತೆಗೆ ಕ್ಯಾಪ್ಟನ್ ನಿಯೋಜಿಸಲಾಗಿದೆ! ಶ್ರೀನು ಬರುತ್ತಿದ್ದಾರೆ.", "നിങ്ങളുടെ റോഡിലേക്ക് ക്യാപ്റ്റനെ നിയോഗിച്ചു! ശ്രീനു വരുന്നു."],
+            ["Ride completed successfully.", "రైడ్ విజయవంతంగా పూర్తయింది.", "சவாரி வெற்றிகரமாக முடிந்தது.", "ಸವಾರಿ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ.", "യാത്ര വിജയകരമായി പൂർത്തിയായി."],
+            ["Successfully purchased ", "విజయవంతంగా కొనుగోలు చేశారు: ", "வெற்றிகரமாக வாங்கப்பட்டது: ", "ಯಶಸ್ವಿಯಾಗಿ ಖರೀದಿಸಲಾಗಿದೆ: ", "വിജയകരമായി വാങ്ങി: "],
+            [" for ₹", " ధర ₹", " விலை ₹", " ಬೆಲೆ ₹", " വില ₹"],
+            ["Added ₹", "జోడించబడింది ₹", "சேர்க்கப்பட்டது ₹", "ಸೇರಿಸಲಾಗಿದೆ ₹", "ചേർത്തു ₹"],
+            [" bonus coins to wallet!", " బోనస్ కాయిన్‌లు వాలెట్‌కు!", " போனஸ் நாணயங்கள் வாலட்டில்!", " ಬೋನಸ್ ಕಾಯಿನ್‌ಗಳು ವಾಲೆಟ್‌ಗೆ!", " ബോണസ് കോയിനുകൾ വാലറ്റിലേക്ക്!"],
+            ["Coupon already applied.", "కూపన్ ఇప్పటికే వర్తింపజేయబడింది.", "கூப்பன் ஏற்கனவே பயன்படுத்தப்பட்டது.", "ಕೂಪನ್ ಈಗಾಗಲೇ ಅನ್ವಯಿಸಲಾಗಿದೆ.", "കൂപ്പൺ ഇതിനകം പ്രയോഗിച്ചു."],
+            ["Invalid coupon code. Try SOUTH50", "చెల్లని కూపన్ కోడ్. SOUTH50 ప్రయత్నించండి", "தவறான கூப்பன் குறியீடு. SOUTH50 முயற்சிக்கவும்", "ಅಮಾನ್ಯ ಕೂಪನ್ ಕೋಡ್. SOUTH50 ಪ್ರಯತ್ನಿಸಿ", "അസാധുവായ കൂപ്പൺ കോഡ്. SOUTH50 ശ്രമിക്കുക"],
+            ["South India Special Coupon applied! Saved ₹25.", "దక్షిణ భారత ప్రత్యేక కూపన్ వర్తింపజేయబడింది! ₹25 ఆదా చేశారు.", "தென்னிந்திய சிறப்பு கூப்பன் பயன்படுத்தப்பட்டது! ₹25 சேமித்தீர்கள்.", "ದಕ್ಷಿಣ ಭಾರತದ ವಿಶೇಷ ಕೂಪನ್ ಅನ್ವಯಿಸಲಾಗಿದೆ! ₹25 ಉಳಿಸಿದ್ದೀರಿ.", "ദക്ഷിണേന്ത്യൻ പ്രത്യേക കൂപ്പൺ പ്രയോഗിച്ചു! ₹25 ലാഭിച്ചു."],
+            ["Successfully purchased South Commuter Pass for ₹49!", "ദക്ഷിണ కమ్యూటర్ పాస్ ₹49కి విజయవంతంగా కొనుగోలు చేశారు!", "தென்னிந்திய பயண பாஸ் ₹49-க்கு வெற்றிகரமாக வாங்கப்பட்டது!", "ದಕ್ಷಿಣ ಪ್ರಯಾಣಿಕರ ಪಾಸ್ ₹49ಕ್ಕೆ ಯಶಸ್ವಿಯಾಗಿ ಖರೀದಿಸಲಾಗಿದೆ!", "ദക്ഷിണ യാത്രാ പാസ് ₹49-ന് വിജയകരമായി വാങ്ങി!"],
+            ["Successfully purchased Monthly All-South Pass for ₹99!", "నెలవారీ దక్షిణ భారత పాస్ ₹99కి విజయవంతంగా కొనుగోలు చేశారు!", "மாதாந்திர தென்னிந்திய பாஸ் ₹99-க்கு வெற்றிகரமாக வாங்கப்பட்டது!", "ಮಾಸಿಕ ದಕ್ಷಿಣ ಭಾರತ ಪಾಸ್ ₹99ಕ್ಕೆ ಯಶಸ್ವಿಯಾಗಿ ಖರೀದಿಸಲಾಗಿದೆ!", "പ്രതിമാസ ദക്ഷിണേന്ത്യ പാസ് ₹99-ന് വിജയകരമായി വാങ്ങി!"],
+            ["EMERGENCY SOS ALERT dispatched to Police (112)!", "పోలీసులకు (112) అత్యవసర SOS హెచ్చరిక పంపబడింది!", "காவல்துறைக்கு (112) அவசர SOS எச்சரிக்கை அனுப்பப்பட்டது!", "ಪೊಲೀಸರಿಗೆ (112) ತುರ್ತು SOS ಎಚ್ಚರಿಕೆ ಕಳುಹಿಸಲಾಗಿದೆ!", "പോലീസിന് (112) അടിയന്തര SOS അലർട്ട് അയച്ചു!"],
+            ["EMERGENCY SOS ALERT dispatched to ARIDE Safety Team!", "ARIDE భద్రతా బృందానికి అత్యవసర SOS హెచ్చరిక పంపబడింది!", "ARIDE பாதுகாப்புக் குழுவுக்கு அவசர SOS எச்சரிக்கை அனுப்பப்பட்டது!", "ARIDE ಸುರಕ್ಷತಾ ತಂಡಕ್ಕೆ ತುರ್ತು SOS ಎಚ್ಚರಿಕೆ ಕಳುಹಿಸಲಾಗಿದೆ!", "ARIDE സുരക്ഷാ ടീമിന് അടിയന്തര SOS അലർട്ട് അയച്ചു!"],
+            ["Referral code copied to clipboard!", "రిఫరల్ కోడ్ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది!", "பரிந்துரைக் குறியீடு நகலெடுக்கப்பட்டது!", "ರೆಫರಲ್ ಕೋಡ್ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ!", "റഫറൽ കോഡ് ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി!"],
+            ["Success action completed", "చర్య విజయవంతంగా పూర్తయింది", "செயல் வெற்றிகரமாக முடிந்தது", "ಕ್ರಿಯೆ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ", "പ്രവർത്തനം വിജയകരമായി പൂർത്തിയായി"],
+            ["Language updated.", "భాష మార్చబడింది.", "மொழி மாற்றப்பட்டது.", "ಭಾಷೆ ಬದಲಾಗಿದೆ.", "ഭാഷ മാറ്റി."]
+        ];
+        const translations = Object.fromEntries(supportedLanguages.map(function(language) {
+            return [language, Object.fromEntries(translationRows.map(function(row) {
+                return [row[0], row[supportedLanguages.indexOf(language)]];
+            }))];
+        }));
+        const originalTextNodes = new WeakMap();
+        const lastTranslatedTextNodes = new WeakMap();
+        const originalAttributes = new WeakMap();
+        let activeLanguage = 'en';
+        let languageObserver;
+        let originalTitle;
+
+        let appState = {
+            currentTab: 'home',
+            city: 'hyderabad',
+            pickupCoordinates: [17.4126, 78.4482],
+            dropCoordinates: [17.4474, 78.3762],
+            vehicleType: 'bike',
+            paymentMethod: 'cash',
+            pickup: 'Banjara Hills Road No. 12, Hyderabad',
+            drop: 'Hitec City Cyber Towers, Hyderabad',
+            fare: 55,
+            originalFare: 85,
+            couponCode: '',
+            distance: '4.2 km',
+            duration: '4 mins',
+            couponApplied: false,
+            selectedTip: 0,
+            rating: 5,
+            captain: {
+                name: 'Waiting for a driver',
+                vehicleModel: 'A driver will appear after accepting your request.',
+                vehicleNo: ''
+            }
+        };
+
+        let map, trackingMap, pickupMarker, dropMarker, bookingRouteLine, trackingRouteLine, riderMarker;
+        let mapSelectionType = null;
+        let mapLocationsReady = false;
+        let pendingRideBooking = sessionStorage.getItem('aridePendingRideBooking') === '1';
+        let currentRideId = null;
+        let rideUnsubscribe = null;
+        let driverQueueUnsubscribe = null;
+        let driverRidesUnsubscribe = null;
+        let driverAvailable = false;
+        let driverApproved = false;
+        let rideCompletionHandled = false;
+        let emailOtpRequested = false;
+        let onlinePaymentReady = false;
+        const mapSelectionRequests = { pickup: 0, drop: 0 };
+        let bookingRouteRequestId = 0;
+        let trackingRouteRequestId = 0;
+        let bookingRequestTimer;
+        let bookingAttemptId = 0;
+        const locationSearchTimers = {};
+        const locationSearchRequests = { pickup: 0, drop: 0 };
+        let ridesHistoryData = [];
+
+        function initializeAride() {
+            populateMobileCitySelector();
+            initMap();
+            requestAnimationFrame(function() {
+                if(map) map.invalidateSize(true);
+            });
+            renderRidesHistory();
+            let initialLanguage = 'en';
+            try {
+                initialLanguage = localStorage.getItem('arideLanguage') || 'en';
+            } catch(error) {
+                console.warn('Could not read the saved language:', error);
+            }
+            changeLanguage(initialLanguage, false);
+            checkPaymentReadiness();
+            if(!window.ARIDEFirebase?.configured) {
+                onArideAuthChanged(null, { driverApproved: false, driverProfile: null });
+            }
+        }
+
+        if(document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeAride, { once: true });
+        } else {
+            initializeAride();
+        }
+
+        function populateMobileCitySelector() {
+            let desktopSelector = document.getElementById('citySelector');
+            let mobileSelector = document.getElementById('mobileCitySelector');
+            if(!desktopSelector || !mobileSelector) return;
+            mobileSelector.replaceChildren(...Array.from(desktopSelector.children, function(option) {
+                return option.cloneNode(true);
+            }));
+            mobileSelector.value = appState.city;
+        }
+
+        // City Switcher
+        function changeCity(cityKey) {
+            appState.city = cityKey;
+            document.getElementById('citySelector').value = cityKey;
+            document.getElementById('mobileCitySelector').value = cityKey;
+            let cityInfo = cityData[cityKey];
+            if(cityKey === 'india') {
+                if(map) map.setView(cityInfo.center, cityInfo.zoom);
+                showToast('Showing the India-wide map. Search any Indian address or city.');
+                return;
+            }
+
+            let matching = masterStreetsDatabase.filter(s => s.toLowerCase().includes(cityInfo.name.toLowerCase().split(' ')[0]));
+            let pVal = matching.length > 0 ? matching[0] : cityInfo.name + ', India';
+            let dVal = matching.length > 1 ? matching[1] : cityInfo.name + ' city centre, India';
+
+            document.getElementById('pickupInput').value = pVal;
+            document.getElementById('dropInput').value = dVal;
+            appState.pickup = pVal;
+            appState.drop = dVal;
+            appState.pickupCoordinates = cityInfo.center;
+            appState.dropCoordinates = [cityInfo.center[0] + 0.025, cityInfo.center[1] + 0.025];
+
+            if(map) {
+                map.setView(cityInfo.center, cityInfo.zoom || 13);
+                pickupMarker.setLatLng(cityInfo.center);
+                dropMarker.setLatLng(appState.dropCoordinates);
+                updateBookingRoute();
+            }
+            showToast('Switched to ' + cityInfo.name + ' successfully.');
+        }
+
+        function setLocationSearchMessage(container, message, isError) {
+            container.replaceChildren();
+            let row = document.createElement('div');
+            row.className = 'px-4 py-3 text-xs ' + (isError ? 'text-red-600' : 'text-gray-500');
+            setLocalizedText(row, message);
+            container.appendChild(row);
+            container.classList.remove('hidden');
+        }
+
+        function appendLocationSearchMessage(container, message, isError) {
+            let row = document.createElement('div');
+            row.className = 'px-4 py-3 text-xs ' + (isError ? 'text-red-600' : 'text-gray-500');
+            setLocalizedText(row, message);
+            container.appendChild(row);
+        }
+
+        function addLocationSearchOption(container, type, displayName, coordinates) {
+            let option = document.createElement('button');
+            option.type = 'button';
+            option.className = 'w-full text-left px-4 py-2.5 hover:bg-yellow-50 text-xs font-semibold text-gray-800 border-b border-gray-100';
+            setLocalizedText(option, displayName);
+            option.onclick = function() {
+                if(!coordinates.every(Number.isFinite)) {
+                    setLocationSearchMessage(container, 'This location did not return valid map coordinates.', true);
+                    return;
+                }
+                document.getElementById(type + 'Input').value = displayName;
+                appState.city = 'india';
+                document.getElementById('citySelector').value = 'india';
+                document.getElementById('mobileCitySelector').value = 'india';
+                if(type === 'pickup') {
+                    appState.pickup = displayName;
+                    appState.pickupCoordinates = coordinates;
+                    pickupMarker.setLatLng(coordinates).bindPopup('Pickup: ' + displayName);
+                } else {
+                    appState.drop = displayName;
+                    appState.dropCoordinates = coordinates;
+                    dropMarker.setLatLng(coordinates).bindPopup('Drop: ' + displayName);
+                }
+                mapLocationsReady = Boolean(appState.pickupCoordinates && appState.dropCoordinates);
+                if(appState.pickupCoordinates && appState.dropCoordinates) {
+                    map.fitBounds([appState.pickupCoordinates, appState.dropCoordinates], { padding: [40, 40], maxZoom: 15 });
+                } else {
+                    map.setView(coordinates, 15);
+                }
+                container.classList.add('hidden');
+                updateBookingRoute();
+            };
+            container.appendChild(option);
+        }
+
+        function revealLocationSearchSpace(type) {
+            if(window.innerWidth >= 1024) return;
+            let panel = document.querySelector('#view-home > div:first-child');
+            let input = document.getElementById(type + 'Input');
+            let panelBounds = panel.getBoundingClientRect();
+            let inputBounds = input.getBoundingClientRect();
+            let availableBottom = panelBounds.bottom - 12;
+            let requiredBottom = availableBottom - 220;
+            if(inputBounds.bottom > requiredBottom) {
+                panel.scrollTop += inputBounds.bottom - requiredBottom;
+            }
+        }
+
+        // Search India-wide using OpenStreetMap Nominatim.
+        function handleLocationInput(type, query, isTyping) {
+            let containerId = type === 'pickup' ? 'pickupSuggestions' : 'dropSuggestions';
+            let container = document.getElementById(containerId);
+            let requestId = ++locationSearchRequests[type];
+            clearTimeout(locationSearchTimers[type]);
+            if(isTyping) {
+                revealLocationSearchSpace(type);
+                mapLocationsReady = false;
+                document.getElementById('continueMapBooking').classList.add('hidden');
+                if(type === 'pickup') appState.pickupCoordinates = null;
+                else appState.dropCoordinates = null;
+                updateBookingRoute();
+            }
+
+            if(!query || query.trim().length < 3) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            let searchText = query.trim().toLocaleLowerCase();
+            let cityResults = Object.entries(cityData).filter(function(entry) {
+                return entry[0] !== 'india' &&
+                    (entry[0].toLocaleLowerCase().includes(searchText) ||
+                    entry[1].name.toLocaleLowerCase().includes(searchText));
+            }).slice(0, 6);
+            container.replaceChildren();
+            cityResults.forEach(function(entry) {
+                addLocationSearchOption(container, type, entry[1].name + ', India', entry[1].center);
+            });
+            let loadingRow = null;
+            if(cityResults.length === 0) {
+                loadingRow = document.createElement('div');
+                loadingRow.className = 'px-4 py-3 text-xs text-gray-500';
+                setLocalizedText(loadingRow, 'Searching Indian addresses…');
+                container.appendChild(loadingRow);
+            }
+            container.classList.remove('hidden');
+            locationSearchTimers[type] = setTimeout(async function() {
+                try {
+                    let params = new URLSearchParams({
+                        format: 'jsonv2',
+                        countrycodes: 'in',
+                        limit: '6',
+                        q: query.trim()
+                    });
+                    if(map) {
+                        let bounds = map.getBounds();
+                        params.set('viewbox', [
+                            bounds.getWest(),
+                            bounds.getNorth(),
+                            bounds.getEast(),
+                            bounds.getSouth()
+                        ].join(','));
+                        params.set('bounded', '0');
+                    }
+                    let url = 'https://nominatim.openstreetmap.org/search?' + params.toString();
+                    let response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                    if(!response.ok) throw new Error('Address search returned HTTP ' + response.status);
+                    let results = await response.json();
+                    if(requestId !== locationSearchRequests[type]) return;
+
+                    if(loadingRow) loadingRow.remove();
+                    if(!Array.isArray(results)) throw new Error('Address search returned an invalid response.');
+                    if(results.length === 0 && cityResults.length === 0) {
+                        setLocationSearchMessage(container, 'No Indian locations found. Try a city, road, or landmark.', false);
+                        return;
+                    }
+
+                    results.forEach(function(result) {
+                        let coordinates = [Number(result.lat), Number(result.lon)];
+                        let duplicateCity = cityResults.some(function(entry) {
+                            return entry[1].name.toLocaleLowerCase() === result.name?.toLocaleLowerCase();
+                        });
+                        if(!duplicateCity) {
+                            addLocationSearchOption(container, type, result.display_name, coordinates);
+                        }
+                    });
+                    if(results.length === 0 && cityResults.length > 0) {
+                        appendLocationSearchMessage(container, 'No Indian locations found. Try a city, road, or landmark.', false);
+                    }
+                } catch(error) {
+                    if(requestId !== locationSearchRequests[type]) return;
+                    if(loadingRow) loadingRow.remove();
+                    if(cityResults.length === 0) {
+                        setLocationSearchMessage(container, 'Address search failed. Check your connection and try again.', true);
+                    } else {
+                        appendLocationSearchMessage(container, 'Address search failed. Check your connection and try again.', true);
+                    }
+                    console.error('India address search failed:', error);
+                }
+            }, 1000);
+        }
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if(!e.target.closest('#pickupInput') && !e.target.closest('#pickupSuggestions')) {
+                document.getElementById('pickupSuggestions').classList.add('hidden');
+            }
+            if(!e.target.closest('#dropInput') && !e.target.closest('#dropSuggestions')) {
+                document.getElementById('dropSuggestions').classList.add('hidden');
+            }
+        });
+
+        // Language Switcher
+        function changeLanguage(langCode) {
+            activeLanguage = translations[langCode] ? langCode : 'en';
+            document.getElementById('langSelector').value = activeLanguage;
+            document.documentElement.lang = activeLanguage === 'en' ? 'en-IN' : activeLanguage + '-IN';
+            document.title = localizeText("ARIDE - India's Ride & Delivery Super App");
+            applyLanguageToPage();
+            try {
+                localStorage.setItem('arideLanguage', activeLanguage);
+            } catch(error) {
+                console.warn('Could not save the selected language:', error);
+            }
+            if(arguments.length < 2 || arguments[1]) showToast('Language updated.');
+        }
+
+        function localizeText(value) {
+            if(typeof value !== 'string' || activeLanguage === 'en') return value;
+            let dictionary = translations[activeLanguage];
+            let trimmed = value.trim();
+            if(dictionary[trimmed]) return value.replace(trimmed, dictionary[trimmed]);
+
+            let match = trimmed.match(/^Switched to (.+) successfully\.$/);
+            if(match) return dictionary['Switched to '] + match[1] + dictionary[' successfully.'];
+
+            match = trimmed.match(/^Successfully purchased (.+) for ₹(\d+)!$/);
+            if(match) return dictionary['Successfully purchased '] + localizeText(match[1]) + dictionary[' for ₹'] + match[2] + '!';
+
+            match = trimmed.match(/^Added ₹(\d+)( bonus coins to wallet!)$/);
+            if(match) return dictionary['Added ₹'] + match[1] + dictionary[match[2]];
+
+            match = trimmed.match(/^(\d+) Coins$/);
+            if(match) return match[1] + ' ' + dictionary.Coins;
+
+            match = trimmed.match(/^Live rider GPS: updated (.+)$/);
+            if(match) return dictionary['Live rider GPS: updated'] + ' ' + match[1];
+
+            match = trimmed.match(/^EMERGENCY SOS ALERT dispatched to (.+)!$/);
+            if(match) return dictionary['EMERGENCY SOS ALERT dispatched to ' + match[1] + '!'] || value;
+
+            return value;
+        }
+
+        function translateTextNode(node) {
+            let currentText = node.nodeValue;
+            let originalText = originalTextNodes.get(node);
+            if(originalText === undefined || (lastTranslatedTextNodes.has(node) && currentText !== lastTranslatedTextNodes.get(node))) {
+                originalText = currentText;
+                originalTextNodes.set(node, originalText);
+            }
+            let translatedText = localizeText(originalText);
+            lastTranslatedTextNodes.set(node, translatedText);
+            if(currentText !== translatedText) node.nodeValue = translatedText;
+        }
+
+        function translateElementAttributes(element) {
+            ['placeholder', 'title', 'aria-label', 'alt'].forEach(function(attributeName) {
+                if(!element.hasAttribute(attributeName)) return;
+                let originals = originalAttributes.get(element) || {};
+                let currentValue = element.getAttribute(attributeName);
+                if(originals[attributeName] === undefined) originals[attributeName] = currentValue;
+                let translatedValue = localizeText(originals[attributeName]);
+                if(currentValue !== translatedValue) element.setAttribute(attributeName, translatedValue);
+                originalAttributes.set(element, originals);
+            });
+        }
+
+        function setLocalizedText(element, sourceText) {
+            element.textContent = sourceText;
+            let textNode = element.firstChild;
+            if(!textNode || textNode.nodeType !== Node.TEXT_NODE) return;
+            originalTextNodes.set(textNode, sourceText);
+            let translatedText = localizeText(sourceText);
+            lastTranslatedTextNodes.set(textNode, translatedText);
+            if(textNode.nodeValue !== translatedText) textNode.nodeValue = translatedText;
+        }
+
+        function translateSubtree(root) {
+            if(root.nodeType === Node.TEXT_NODE) {
+                if(!root.parentElement || !root.parentElement.closest('script, style, noscript')) translateTextNode(root);
+                return;
+            }
+            if(root.nodeType !== Node.ELEMENT_NODE && root !== document.body) return;
+            if(root.nodeType === Node.ELEMENT_NODE) translateElementAttributes(root);
+            let walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+            while(walker.nextNode()) {
+                let textNode = walker.currentNode;
+                if(!textNode.parentElement.closest('script, style, noscript')) translateTextNode(textNode);
+            }
+            if(root.querySelectorAll) root.querySelectorAll('[placeholder], [title], [aria-label], [alt]').forEach(translateElementAttributes);
+        }
+
+        function applyLanguageToPage() {
+            translateSubtree(document.body);
+            if(!languageObserver) {
+                languageObserver = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if(mutation.type === 'characterData') {
+                            if(mutation.target.parentElement && !mutation.target.parentElement.closest('script, style, noscript')) translateTextNode(mutation.target);
+                        } else {
+                            mutation.addedNodes.forEach(translateSubtree);
+                        }
+                    });
+                });
+                languageObserver.observe(document.body, { subtree: true, childList: true, characterData: true });
+            }
+        }
+
+        // Tab Switching
+        function switchTab(tabId) {
+            appState.currentTab = tabId;
+            document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.getAttribute('data-tab') === tabId) {
+                    btn.classList.add('text-arideGold');
+                    btn.classList.remove('text-gray-300');
+                } else {
+                    btn.classList.remove('text-arideGold');
+                    btn.classList.add('text-gray-300');
+                }
+            });
+
+            document.querySelectorAll('.mobile-nav').forEach(btn => {
+                if(btn.getAttribute('data-tab') === tabId) {
+                    btn.classList.add('text-arideGold');
+                    btn.classList.remove('text-gray-400');
+                } else {
+                    btn.classList.remove('text-arideGold');
+                    btn.classList.add('text-gray-400');
+                }
+            });
+
+            if(tabId === 'home') setTimeout(() => { if(map) map.invalidateSize(); }, 200);
+            if(tabId === 'tracking') setTimeout(() => { if(trackingMap) trackingMap.invalidateSize(); }, 200);
+        }
+
+        function openAuthModal() {
+            let firebase = window.ARIDEFirebase;
+            document.getElementById('authMessage').innerText = firebase && firebase.configured
+                ? 'We will send a six-digit email code. Use this account for booking or driver access.'
+                : 'Email code sign-in is not configured yet. Add Firebase and email sender settings, then restart the site.';
+            document.getElementById('authSignOutButton').classList.toggle('hidden', !firebase?.currentUser);
+            document.getElementById('authSubmitButton').classList.toggle('hidden', Boolean(firebase?.currentUser));
+            if(!emailOtpRequested && !firebase?.currentUser) resetEmailOtpForm();
+            document.getElementById('authModal').classList.remove('hidden');
+            document.getElementById('authEmailInput').focus();
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function resetEmailOtpForm() {
+            emailOtpRequested = false;
+            document.getElementById('authEmailInput').disabled = false;
+            document.getElementById('authOtpInput').value = '';
+            document.getElementById('authOtpInput').classList.add('hidden');
+            document.getElementById('authOtpLabel').classList.add('hidden');
+            document.getElementById('authResendButton').classList.add('hidden');
+            document.getElementById('authSubmitButton').innerText = 'Send email code';
+        }
+
+        async function sendSignInOtp(event) {
+            event.preventDefault();
+            let firebase = window.ARIDEFirebase;
+            let email = document.getElementById('authEmailInput').value.trim();
+            let message = document.getElementById('authMessage');
+            let button = document.getElementById('authSubmitButton');
+            button.disabled = true;
+            try {
+                if(!firebase?.configured) {
+                    throw new Error('Firebase web settings are missing. Add VITE_FIREBASE_* settings and restart the site.');
+                }
+                if(emailOtpRequested) {
+                    await firebase.verifyEmailOtp(email, document.getElementById('authOtpInput').value);
+                    message.innerText = 'Code verified. Signing you in…';
+                    return;
+                }
+                await firebase.sendEmailOtp(email);
+                emailOtpRequested = true;
+                document.getElementById('authEmailInput').disabled = true;
+                document.getElementById('authOtpInput').classList.remove('hidden');
+                document.getElementById('authOtpLabel').classList.remove('hidden');
+                document.getElementById('authResendButton').classList.remove('hidden');
+                document.getElementById('authSubmitButton').innerText = 'Verify code and sign in';
+                message.innerText = 'A six-digit code was sent to ' + email + '. Check your inbox and spam folder.';
+                document.getElementById('authOtpInput').focus();
+                showToast('Check your email for the six-digit ARIDE code.');
+            } catch(error) {
+                console.error('ARIDE email sign-in failed:', error);
+                message.innerText = error.message || 'Could not complete email sign-in. Please try again.';
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function resendEmailOtp() {
+            let email = document.getElementById('authEmailInput').value.trim();
+            let button = document.getElementById('authResendButton');
+            button.disabled = true;
+            try {
+                await window.ARIDEFirebase.sendEmailOtp(email);
+                document.getElementById('authMessage').innerText = 'A new six-digit code was sent to ' + email + '.';
+                document.getElementById('authOtpInput').value = '';
+                showToast('A new sign-in code was sent.');
+            } catch(error) {
+                document.getElementById('authMessage').innerText = error.message || 'Could not resend your code.';
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function signOutOfAride() {
+            try {
+                await window.ARIDEFirebase?.signOut();
+                closeAuthModal();
+                showToast('Signed out of ARIDE.');
+            } catch(error) {
+                console.error('ARIDE sign-out failed:', error);
+                showToast(error.message || 'Could not sign out.');
+            }
+        }
+
+        function onArideFirebaseError(message) {
+            showToast(message);
+        }
+
+        function onArideAuthChanged(user, access) {
+            let label = document.getElementById('authStatusLabel');
+            label.innerText = user ? 'Account' : 'Sign in';
+            driverApproved = Boolean(access && access.driverApproved);
+            driverAvailable = Boolean(access && access.driverProfile && access.driverProfile.available);
+            let status = document.getElementById('driverAccountStatus');
+            let roleNotice = document.getElementById('driverRoleNotice');
+            let availabilityButton = document.getElementById('driverAvailabilityButton');
+            document.querySelectorAll('.driver-nav').forEach(button => {
+                button.classList.toggle('hidden', !driverApproved);
+            });
+
+            if(!window.ARIDEFirebase?.configured) {
+                status.innerText = 'Firebase is not configured.';
+                roleNotice.innerText = 'Add Firebase web app settings and Firestore rules before enabling customer sign-in or dispatch.';
+                availabilityButton.disabled = true;
+            } else if(!user) {
+                status.innerText = 'Sign in with your approved driver email to continue.';
+                roleNotice.innerText = 'Customers can book rides after email sign-in. Driver access is granted separately by the ARIDE administrator in Firebase.';
+                availabilityButton.disabled = true;
+                refreshDriverDashboard();
+                if(appState.currentTab === 'driver') switchTab('home');
+            } else if(!driverApproved) {
+                status.innerText = user.email || 'Signed in';
+                roleNotice.innerText = 'This account is not approved for driver access. Ask the ARIDE administrator to create an approved drivers record for this Firebase user.';
+                availabilityButton.disabled = true;
+                if(appState.currentTab === 'driver') switchTab('home');
+            } else {
+                let profile = access.driverProfile;
+                status.innerText = (profile.name || user.email) + ' · ' + (profile.vehicle || 'Driver');
+                roleNotice.innerText = 'Approved driver account. Ride requests become visible while you are online.';
+                availabilityButton.disabled = false;
+                availabilityButton.innerText = driverAvailable ? 'Go offline' : 'Go online';
+                availabilityButton.classList.toggle('bg-green-600', driverAvailable);
+                availabilityButton.classList.toggle('bg-gray-500', !driverAvailable);
+                refreshDriverDashboard();
+            }
+
+            document.getElementById('authSubmitButton').classList.toggle('hidden', Boolean(user));
+            document.getElementById('authResendButton').classList.toggle('hidden', Boolean(user) || !emailOtpRequested);
+            document.getElementById('authSignOutButton').classList.toggle('hidden', !user);
+            if(user) {
+                if(!document.getElementById('authModal').classList.contains('hidden')) closeAuthModal();
+                document.getElementById('authEmailInput').value = user.email || '';
+                document.getElementById('authMessage').innerText = 'Signed in as ' + (user.email || 'your ARIDE account') + '.';
+                resetEmailOtpForm();
+                if(pendingRideBooking) {
+                    pendingRideBooking = false;
+                    sessionStorage.removeItem('aridePendingRideBooking');
+                    closeAuthModal();
+                    startBooking();
+                }
+            }
+        }
+
+        function openDriverDashboard() {
+            if(!window.ARIDEFirebase?.currentUser || !driverApproved) {
+                showToast('Driver dashboard is only available to approved driver accounts.');
+                if(!window.ARIDEFirebase?.currentUser) openAuthModal();
+                switchTab('home');
+                return;
+            }
+            switchTab('driver');
+            refreshDriverDashboard();
+        }
+
+        function refreshDriverDashboard() {
+            let firebase = window.ARIDEFirebase;
+            if(!firebase?.configured || !firebase.currentUser || !driverApproved) {
+                stopDriverSubscriptions();
+                document.getElementById('driverQueue').replaceChildren();
+                document.getElementById('driverActiveRide').replaceChildren();
+                return;
+            }
+            if(driverAvailable && !driverQueueUnsubscribe) {
+                driverQueueUnsubscribe = firebase.subscribeOpenRideRequests(renderDriverQueue, handleDriverDashboardError);
+            } else if(!driverAvailable && driverQueueUnsubscribe) {
+                driverQueueUnsubscribe();
+                driverQueueUnsubscribe = null;
+                document.getElementById('driverQueue').replaceChildren();
+                document.getElementById('driverQueue').innerText = 'You are offline. Go online to receive ride requests.';
+            }
+            if(!driverRidesUnsubscribe) {
+                driverRidesUnsubscribe = firebase.subscribeDriverRides(renderDriverActiveRides, handleDriverDashboardError);
+            }
+        }
+
+        function stopDriverSubscriptions() {
+            if(driverQueueUnsubscribe) driverQueueUnsubscribe();
+            if(driverRidesUnsubscribe) driverRidesUnsubscribe();
+            driverQueueUnsubscribe = null;
+            driverRidesUnsubscribe = null;
+        }
+
+        function handleDriverDashboardError(error) {
+            console.error('Driver dashboard could not load ride requests:', error);
+            document.getElementById('driverQueue').innerText = error.message || 'Could not load ride requests.';
+        }
+
+        function renderDriverQueue(rides) {
+            let queue = document.getElementById('driverQueue');
+            queue.replaceChildren();
+            if(!rides.length) {
+                queue.innerText = 'No ride requests are waiting right now.';
+                return;
+            }
+            rides.forEach(ride => {
+                let card = document.createElement('article');
+                card.className = 'bg-white border border-gray-200 rounded-2xl p-5 shadow-sm';
+                let title = document.createElement('h3');
+                title.className = 'font-extrabold text-gray-900';
+                title.innerText = (ride.vehicleType || 'Ride').toUpperCase() + ' · ₹' + ride.fare;
+                let route = document.createElement('p');
+                route.className = 'text-sm text-gray-700 mt-2';
+                route.innerText = 'Pickup: ' + ride.pickup + ' → Drop-off: ' + ride.drop;
+                let payment = document.createElement('p');
+                payment.className = 'text-xs text-gray-500 mt-2';
+                payment.innerText = 'Payment: ' + (ride.paymentMethod === 'online' ? 'Online · UPI/cards' : 'Cash');
+                let button = document.createElement('button');
+                button.className = 'bg-arideGold text-arideDark font-extrabold px-5 py-2.5 rounded-xl text-sm mt-4';
+                button.innerText = 'Accept ride';
+                button.onclick = () => acceptDriverRide(ride.id, button);
+                card.append(title, route, payment, button);
+                queue.appendChild(card);
+            });
+        }
+
+        function renderDriverActiveRides(rides) {
+            let active = document.getElementById('driverActiveRide');
+            active.replaceChildren();
+            rides.forEach(ride => {
+                let card = document.createElement('article');
+                card.className = 'bg-white border-2 border-arideGold rounded-2xl p-5 shadow-sm';
+                let title = document.createElement('h3');
+                title.className = 'font-extrabold text-gray-900';
+                title.innerText = 'Your ride · ' + ride.status.replace('_', ' ').toUpperCase();
+                let route = document.createElement('p');
+                route.className = 'text-sm text-gray-700 mt-2';
+                route.innerText = ride.pickup + ' → ' + ride.drop;
+                card.append(title, route);
+                if(ride.status === 'accepted') {
+                    card.append(createDriverActionButton('Mark arrived', () => updateDriverRide(ride.id, 'arrived')));
+                } else if(ride.status === 'arrived') {
+                    let codeLabel = document.createElement('label');
+                    codeLabel.className = 'block text-xs font-bold text-gray-700 mt-4 mb-1';
+                    codeLabel.innerText = 'Customer trip-start code';
+                    let codeInput = document.createElement('input');
+                    codeInput.type = 'text';
+                    codeInput.inputMode = 'numeric';
+                    codeInput.autocomplete = 'one-time-code';
+                    codeInput.pattern = '[0-9]{6}';
+                    codeInput.maxLength = 6;
+                    codeInput.className = 'block w-full max-w-xs border border-gray-300 rounded-xl px-3 py-2.5 text-sm tracking-[0.3em]';
+                    codeInput.placeholder = '000000';
+                    codeInput.id = 'trip-code-' + ride.id;
+                    card.append(codeLabel, codeInput);
+                    card.append(createDriverActionButton('Verify code and start trip', () => verifyDriverTripStart(ride.id)));
+                    card.append(createDriverActionButton('Resend trip code', () => resendDriverTripCode(ride.id), true));
+                } else if(ride.status === 'in_progress') {
+                    card.append(createDriverActionButton('Complete trip', () => updateDriverRide(ride.id, 'completed')));
+                }
+                if(['accepted', 'arrived', 'in_progress'].includes(ride.status)) {
+                    card.append(createDriverActionButton('Share live location', () => shareDriverLocation(ride.id), true));
+                }
+                active.appendChild(card);
+            });
+        }
+
+        function createDriverActionButton(text, action, secondary) {
+            let button = document.createElement('button');
+            button.className = (secondary ? 'bg-white border border-gray-300 text-gray-800' : 'bg-arideGold text-arideDark') +
+                ' font-extrabold px-4 py-2.5 rounded-xl text-sm mt-4 mr-2';
+            button.innerText = text;
+            button.onclick = action;
+            return button;
+        }
+
+        async function acceptDriverRide(requestId, button) {
+            button.disabled = true;
+            try {
+                await window.ARIDEFirebase.acceptRideRequest(requestId);
+                showToast('Ride accepted. Customer has been notified.');
+            } catch(error) {
+                console.error('Could not accept ride request:', error);
+                showToast(error.message || 'Could not accept this ride.');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function updateDriverRide(requestId, status) {
+            try {
+                await window.ARIDEFirebase.updateDriverRideStatus(requestId, status);
+                showToast(status === 'completed' ? 'Trip marked complete.' : 'Ride status updated.');
+            } catch(error) {
+                console.error('Could not update ride status:', error);
+                showToast(error.message || 'Could not update ride status.');
+            }
+        }
+
+        async function resendDriverTripCode(requestId) {
+            try {
+                await window.ARIDEFirebase.sendTripStartOtp(requestId);
+                showToast('A new trip-start code was sent to the customer email.');
+            } catch(error) {
+                console.error('Could not send trip-start code:', error);
+                showToast(error.message || 'Could not send the trip-start code.');
+            }
+        }
+
+        async function verifyDriverTripStart(requestId) {
+            let input = document.getElementById('trip-code-' + requestId);
+            let code = input.value.trim();
+            if(!/^\d{6}$/.test(code)) {
+                showToast('Enter the customer’s six-digit trip-start code.');
+                input.focus();
+                return;
+            }
+            try {
+                await window.ARIDEFirebase.verifyTripStartOtp(requestId, code);
+                showToast('Trip code verified. The trip has started.');
+            } catch(error) {
+                console.error('Could not verify trip-start code:', error);
+                showToast(error.message || 'The trip-start code could not be verified.');
+                input.focus();
+            }
+        }
+
+        function shareDriverLocation(requestId) {
+            try {
+                window.ARIDEFirebase.startDriverLocationSharing(requestId);
+                showToast('Live location sharing started. Keep this page open during the trip.');
+            } catch(error) {
+                console.error('Could not start driver location sharing:', error);
+                showToast(error.message || 'Could not share live location.');
+            }
+        }
+
+        async function toggleDriverAvailability() {
+            let next = !driverAvailable;
+            try {
+                await window.ARIDEFirebase.setDriverAvailability(next);
+                driverAvailable = next;
+                let button = document.getElementById('driverAvailabilityButton');
+                button.innerText = next ? 'Go offline' : 'Go online';
+                button.classList.toggle('bg-green-600', next);
+                button.classList.toggle('bg-gray-500', !next);
+                refreshDriverDashboard();
+                showToast(next ? 'You are online and can receive ride requests.' : 'You are offline.');
+            } catch(error) {
+                console.error('Could not change driver availability:', error);
+                showToast(error.message || 'Could not update driver availability.');
+            }
+        }
+
+        window.onArideAuthChanged = onArideAuthChanged;
+        window.onArideFirebaseError = onArideFirebaseError;
+
+        // Initialize Leaflet Map
+        function initMap() {
+            let center = cityData['hyderabad'].center;
+            map = L.map('map').setView(center, 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            pickupMarker = L.marker(appState.pickupCoordinates).addTo(map).bindPopup('<b>Pickup</b>');
+            dropMarker = L.marker(appState.dropCoordinates).addTo(map).bindPopup('<b>Drop point</b>');
+            map.on('click', handleBookingMapClick);
+            updateBookingRoute();
+        }
+
+        function selectMapLocation(type) {
+            mapSelectionType = type;
+            mapLocationsReady = false;
+            document.getElementById('continueMapBooking').classList.add('hidden');
+            setLocalizedText(
+                document.getElementById('mapSelectionPrompt'),
+                type === 'pickup' ? 'Tap the map to set your pickup location.' : 'Tap the map to set your drop-off location.'
+            );
+            document.getElementById(type === 'pickup' ? 'mapPickupButton' : 'mapDropButton').classList.add('ring-2', 'ring-arideGold');
+            document.getElementById(type === 'pickup' ? 'mapDropButton' : 'mapPickupButton').classList.remove('ring-2', 'ring-arideGold');
+        }
+
+        function beginMapLocationSelection() {
+            switchTab('home');
+            selectMapLocation('pickup');
+            document.getElementById('bookingMapPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setTimeout(function() {
+                if(map) map.invalidateSize(true);
+            }, 250);
+            showToast('Tap the map to set pickup, then tap again to set your drop-off.');
+        }
+
+        async function handleBookingMapClick(event) {
+            if(!mapSelectionType) return;
+
+            let coordinates = [event.latlng.lat, event.latlng.lng];
+            if(coordinates[0] < 6 || coordinates[0] > 38 || coordinates[1] < 68 || coordinates[1] > 98) {
+                showToast('Choose a location within India.');
+                return;
+            }
+
+            let type = mapSelectionType;
+            mapSelectionType = null;
+            let input = document.getElementById(type + 'Input');
+            let fallbackName = coordinates[0].toFixed(5) + ', ' + coordinates[1].toFixed(5);
+            input.value = fallbackName;
+            if(type === 'pickup') {
+                appState.pickup = fallbackName;
+                appState.pickupCoordinates = coordinates;
+                pickupMarker.setLatLng(coordinates).bindPopup('<b>Pickup</b>');
+            } else {
+                appState.drop = fallbackName;
+                appState.dropCoordinates = coordinates;
+                dropMarker.setLatLng(coordinates).bindPopup('<b>Drop point</b>');
+            }
+
+            let requestId = ++mapSelectionRequests[type];
+            updateBookingRoute();
+            if(type === 'pickup' && appState.dropCoordinates) {
+                map.fitBounds([coordinates, appState.dropCoordinates], { padding: [40, 40], maxZoom: 15 });
+            } else if(type === 'drop' && appState.pickupCoordinates) {
+                map.fitBounds([appState.pickupCoordinates, coordinates], { padding: [40, 40], maxZoom: 15 });
+            }
+
+            let reverseLookup = fetch('https://nominatim.openstreetmap.org/reverse?' + new URLSearchParams({
+                format: 'jsonv2',
+                lat: coordinates[0].toString(),
+                lon: coordinates[1].toString()
+            }).toString(), { headers: { 'Accept': 'application/json' } });
+
+            if(type === 'pickup') {
+                selectMapLocation('drop');
+                showToast('Pickup set. Now tap the map to set your drop-off.');
+            } else {
+                mapLocationsReady = Boolean(appState.pickupCoordinates && appState.dropCoordinates);
+                document.getElementById('continueMapBooking').classList.toggle('hidden', !mapLocationsReady);
+                document.getElementById('mapPickupButton').classList.remove('ring-2', 'ring-arideGold');
+                document.getElementById('mapDropButton').classList.remove('ring-2', 'ring-arideGold');
+                setLocalizedText(document.getElementById('mapSelectionPrompt'), 'Pickup and drop-off are set. Confirm to find a ride.');
+                showToast('Both ride locations are set on the map.');
+            }
+
+            try {
+                let response = await reverseLookup;
+                if(!response.ok) throw new Error('Reverse geocoding returned HTTP ' + response.status);
+                let result = await response.json();
+                if(requestId === mapSelectionRequests[type] && result.display_name) {
+                    input.value = result.display_name;
+                    if(type === 'pickup') appState.pickup = result.display_name;
+                    else appState.drop = result.display_name;
+                    if(type === 'pickup') pickupMarker.bindPopup('Pickup: ' + result.display_name);
+                    else dropMarker.bindPopup('Drop point: ' + result.display_name);
+                }
+            } catch(error) {
+                console.error('Map location lookup failed:', error);
+                if(requestId === mapSelectionRequests[type]) {
+                    showToast('Could not find the street name; the selected map coordinates were saved.');
+                }
+            }
+        }
+
+        async function getRoadRoute(from, to, requestId, isTracking) {
+            let routeUrl = 'https://router.project-osrm.org/route/v1/driving/' +
+                from[1] + ',' + from[0] + ';' + to[1] + ',' + to[0] +
+                '?overview=full&geometries=geojson';
+            let response = await fetch(routeUrl);
+            if(!response.ok) throw new Error('Road routing returned HTTP ' + response.status);
+            let data = await response.json();
+            if(data.code !== 'Ok' || !data.routes || !data.routes.length) {
+                throw new Error('No drivable road route was returned.');
+            }
+            if(requestId !== (isTracking ? trackingRouteRequestId : bookingRouteRequestId)) return;
+
+            let routeCoordinates = data.routes[0].geometry.coordinates.map(function(point) {
+                return [point[1], point[0]];
+            });
+            let targetMap = isTracking ? trackingMap : map;
+            let oldLine = isTracking ? trackingRouteLine : bookingRouteLine;
+            if(oldLine) targetMap.removeLayer(oldLine);
+            let newLine = L.polyline(routeCoordinates, {
+                color: '#A4863D',
+                weight: 6,
+                opacity: 0.9,
+                lineCap: 'round',
+                lineJoin: 'round'
+            }).addTo(targetMap);
+            if(isTracking) trackingRouteLine = newLine;
+            else bookingRouteLine = newLine;
+
+            return { routeLine: newLine, bounds: newLine.getBounds(), distance: data.routes[0].distance };
+        }
+
+        async function updateBookingRoute() {
+            let requestId = ++bookingRouteRequestId;
+            if(!appState.pickupCoordinates || !appState.dropCoordinates) {
+                if(bookingRouteLine) {
+                    map.removeLayer(bookingRouteLine);
+                    bookingRouteLine = null;
+                }
+                return;
+            }
+            if(bookingRouteLine) {
+                map.removeLayer(bookingRouteLine);
+                bookingRouteLine = null;
+            }
+            try {
+                await getRoadRoute(appState.pickupCoordinates, appState.dropCoordinates, requestId, false);
+            } catch(error) {
+                if(requestId !== bookingRouteRequestId) return;
+                showToast('Road route unavailable. Please try again shortly.');
+                console.error('Road route lookup failed:', error);
+            }
+        }
+
+        async function updateTrackingRoute() {
+            let requestId = ++trackingRouteRequestId;
+            if(!appState.pickupCoordinates || !appState.dropCoordinates) return;
+            if(trackingRouteLine) {
+                trackingMap.removeLayer(trackingRouteLine);
+                trackingRouteLine = null;
+            }
+            try {
+                let route = await getRoadRoute(appState.pickupCoordinates, appState.dropCoordinates, requestId, true);
+                if(route && requestId === trackingRouteRequestId) {
+                    trackingMap.fitBounds(route.bounds, { padding: [50, 50], maxZoom: 16 });
+                }
+            } catch(error) {
+                if(requestId !== trackingRouteRequestId) return;
+                console.error('Tracking road route lookup failed:', error);
+                document.getElementById('riderGpsHelp').textContent = 'Road route unavailable; rider GPS will still appear when connected.';
+            }
+        }
+
+        function recenterMap() {
+            if(!map) return;
+            if(!navigator.geolocation) {
+                showToast('Location services are not available in this browser.');
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(function(position) {
+                let coordinates = [position.coords.latitude, position.coords.longitude];
+                appState.pickupCoordinates = coordinates;
+                appState.pickup = 'My current location';
+                document.getElementById('pickupInput').value = appState.pickup;
+                pickupMarker.setLatLng(coordinates).bindPopup('<b>My current location</b>');
+                map.setView(coordinates, 16);
+                updateBookingRoute();
+                showToast('Pickup set to your current location.');
+            }, function(error) {
+                let message = error.code === error.PERMISSION_DENIED ? 'Allow location access to use your current position.' : 'Could not get your current location.';
+                showToast(message);
+            }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 });
+        }
+
+        function showIndiaMap() {
+            if(map) map.fitBounds([[6.5, 68], [37.2, 97.5]], { padding: [20, 20] });
+        }
+
+        // Vehicle Selection
+        function selectVehicle(type) {
+            appState.vehicleType = type;
+            document.querySelectorAll('.vehicle-tab').forEach(btn => {
+                btn.classList.remove('border-arideGold', 'bg-yellow-50/60');
+                btn.classList.add('border-gray-200', 'bg-white');
+            });
+            let selectedBtn = document.getElementById('v-' + type);
+            selectedBtn.classList.add('border-arideGold', 'bg-yellow-50/60');
+            selectedBtn.classList.remove('border-gray-200', 'bg-white');
+
+            let names = { bike: 'Bike Taxi', auto: 'Auto', cab: 'Cab AC', parcel: 'Parcel Delivery' };
+            let fares = { bike: {f: 55, o: 85, t: '4 mins'}, auto: {f: 95, o: 130, t: '6 mins'}, cab: {f: 250, o: 320, t: '10 mins'}, parcel: {f: 75, o: 100, t: '12 mins'} };
+
+            let info = fares[type];
+            appState.fare = info.f;
+            appState.originalFare = info.o;
+            appState.duration = info.t;
+            if(appState.couponApplied) appState.fare = Math.max(20, info.f - 25);
+
+            setLocalizedText(document.getElementById('vehicleBadge'), names[type]);
+            setLocalizedText(document.getElementById('btnVehicleName'), names[type]);
+            document.getElementById('estFare').innerText = '₹' + appState.fare;
+            document.getElementById('estOriginalFare').innerText = '₹' + info.o;
+            setLocalizedText(document.getElementById('estDuration'), '⚡ ' + info.t + ' away on street');
+        }
+
+        // Payment Method Selection
+        function selectPayment(method) {
+            appState.paymentMethod = method;
+            document.querySelectorAll('.pay-btn').forEach(btn => {
+                btn.classList.remove('border-arideDark', 'bg-gray-50');
+                btn.classList.add('border-gray-200', 'bg-white');
+                btn.setAttribute('aria-pressed', 'false');
+            });
+            let btn = document.getElementById('pay-' + method);
+            btn.classList.add('border-arideDark', 'bg-gray-50');
+            btn.classList.remove('border-gray-200', 'bg-white');
+            btn.setAttribute('aria-pressed', 'true');
+            if(method === 'online') {
+                document.getElementById('paymentReadinessMessage').innerText = onlinePaymentReady
+                    ? 'Online selected. UPI/card checkout appears after your driver completes the trip.'
+                    : 'Online selected, but checkout is not configured here. Add Razorpay test keys in .env and run npm run dev:vercel, or deploy to Vercel with the keys. Booking will be blocked until it is ready.';
+            } else {
+                document.getElementById('paymentReadinessMessage').innerText = onlinePaymentReady
+                    ? 'Cash selected. Pay the driver directly after the trip.'
+                    : 'Cash is ready. Online checkout needs Razorpay keys and the Vercel API.';
+            }
+        }
+
+        async function checkPaymentReadiness() {
+            let message = document.getElementById('paymentReadinessMessage');
+            try {
+                let response = await fetch('/api/payment/status');
+                if(!response.ok) throw new Error('Payment service status is unavailable.');
+                let status = await response.json();
+                onlinePaymentReady = status.onlinePaymentsAvailable === true;
+                message.innerText = onlinePaymentReady
+                    ? 'Online checkout is ready. UPI/card payment is collected after your driver completes the trip.'
+                    : (status.message || 'Online payments are not configured. Cash is available.');
+            } catch(error) {
+                onlinePaymentReady = false;
+                message.innerText = 'Online checkout needs Vercel API routes and Razorpay test keys. Cash is available.';
+                console.info('Online payment readiness check failed:', error.message);
+            }
+            if(appState.paymentMethod === 'online') selectPayment('online');
+        }
+
+        // Apply Coupon Code
+        function applyCoupon() {
+            let code = document.getElementById('couponInput').value.trim().toUpperCase();
+            if(code === 'SOUTH50' || code === 'ARIDE50') {
+                if(!appState.couponApplied) {
+                    appState.fare = Math.max(20, appState.fare - 25);
+                    appState.couponCode = code;
+                    document.getElementById('estFare').innerText = '₹' + appState.fare;
+                    document.getElementById('couponMessage').classList.remove('hidden');
+                    appState.couponApplied = true;
+                    showToast('South India Special Coupon applied! Saved ₹25.');
+                } else {
+                    showToast('Coupon already applied.');
+                }
+            } else {
+                showToast('Invalid coupon code. Try SOUTH50');
+            }
+        }
+
+        // Booking & Live Flow
+        function startBooking() {
+            if(appState.paymentMethod === 'online' && !onlinePaymentReady) {
+                showToast('Online checkout is not configured. Add Razorpay test keys and run npm run dev:vercel, or select cash.');
+                return;
+            }
+            let firebase = window.ARIDEFirebase;
+            if(!firebase?.configured) {
+                showToast('Ride booking is unavailable until Firebase sign-in and Firestore are configured.');
+                return;
+            }
+            if(!firebase.currentUser) {
+                pendingRideBooking = true;
+                sessionStorage.setItem('aridePendingRideBooking', '1');
+                openAuthModal();
+                return;
+            }
+            if(!mapLocationsReady) {
+                beginMapLocationSelection();
+                return;
+            }
+            appState.pickup = document.getElementById('pickupInput').value;
+            appState.drop = document.getElementById('dropInput').value;
+            if(!appState.pickupCoordinates || !appState.dropCoordinates) {
+                showToast('Choose both pickup and drop from the India address search results.');
+                return;
+            }
+            document.getElementById('searchPickupName').innerText = appState.pickup;
+            document.getElementById('summaryPickup').innerText = appState.pickup;
+            document.getElementById('summaryDrop').innerText = appState.drop;
+            document.getElementById('summaryFare').innerText = '₹' + appState.fare + ' (' + appState.paymentMethod.toUpperCase() + ')';
+
+            document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-searching').classList.remove('hidden');
+            currentRideId = null;
+            rideCompletionHandled = false;
+            if(rideUnsubscribe) rideUnsubscribe();
+            rideUnsubscribe = null;
+
+            firebase.createRideRequest({
+                pickup: appState.pickup,
+                drop: appState.drop,
+                pickupCoordinates: appState.pickupCoordinates,
+                dropCoordinates: appState.dropCoordinates,
+                vehicleType: appState.vehicleType,
+                fare: appState.fare,
+                couponCode: appState.couponCode,
+                paymentMethod: appState.paymentMethod
+            }).then(requestId => {
+                currentRideId = requestId;
+                rideUnsubscribe = firebase.watchRideRequest(requestId, onCustomerRideUpdate, error => {
+                    console.error('Could not follow ride request:', error);
+                    showToast(error.message || 'Ride updates stopped.');
+                });
+                showToast('Ride request sent to approved drivers.');
+            }).catch(error => {
+                console.error('Could not create ride request:', error);
+                returnToBookingView();
+                showToast(error.message || 'Could not send your ride request.');
+            });
+        }
+
+        function returnToBookingView() {
+            document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-home').classList.remove('hidden');
+        }
+
+        async function cancelBooking() {
+            try {
+                if(currentRideId && window.ARIDEFirebase?.currentUser) {
+                    await window.ARIDEFirebase.cancelRideRequest(currentRideId);
+                }
+                if(rideUnsubscribe) rideUnsubscribe();
+                rideUnsubscribe = null;
+                currentRideId = null;
+                switchTab('home');
+                showToast('Booking cancelled.');
+            } catch(error) {
+                console.error('Could not cancel ride request:', error);
+                showToast(error.message || 'Could not cancel this booking.');
+            }
+        }
+
+        function onCustomerRideUpdate(ride) {
+            if(ride.status === 'accepted') {
+                document.getElementById('customerRideStatus').innerText = 'Ride accepted by ' + (ride.driverName || 'your driver') + '.';
+                if(appState.captain.name !== ride.driverName) {
+                    assignCaptain({
+                        name: ride.driverName || 'Assigned driver',
+                        vehicle: ride.driverVehicle || 'Vehicle details unavailable'
+                    });
+                }
+            } else if(ride.status === 'arrived') {
+                document.getElementById('customerRideStatus').innerText = 'Your driver has arrived. A six-digit trip-start code was sent to your email.';
+                updateRiderGpsStatus('green', 'Driver arrived at pickup', 'Share your email code with your driver to start the trip.');
+            } else if(ride.status === 'in_progress') {
+                document.getElementById('customerRideStatus').innerText = 'Your trip is in progress.';
+            } else if(ride.status === 'completed' && !rideCompletionHandled) {
+                rideCompletionHandled = true;
+                document.getElementById('customerRideStatus').innerText = 'Trip completed. Review your ride and pay securely.';
+                showRideCompletionModal();
+            } else if(ride.status === 'canceled') {
+                showToast('This ride request was canceled.');
+                if(rideUnsubscribe) rideUnsubscribe();
+                rideUnsubscribe = null;
+                currentRideId = null;
+                returnToBookingView();
+            } else {
+                document.getElementById('customerRideStatus').innerText = 'Finding an available driver. You can cancel the request at any time.';
+            }
+
+            if(ride.driverLocation) {
+                handleCaptainLocationUpdate({
+                    lat: ride.driverLocation.latitude,
+                    lng: ride.driverLocation.longitude
+                });
+            }
+        }
+
+        function assignCaptain(captain) {
+            appState.captain = {
+                ...appState.captain,
+                name: captain.name || appState.captain.name,
+                vehicleModel: captain.vehicle || appState.captain.vehicleModel,
+                vehicleNo: captain.vehicleNo || appState.captain.vehicleNo
+            };
+            document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-tracking').classList.remove('hidden');
+
+            document.getElementById('captainName').innerText = appState.captain.name;
+            document.getElementById('chatCaptainName').innerText = appState.captain.name;
+            document.getElementById('callCaptainName').innerText = appState.captain.name;
+            document.getElementById('captainVehicleModel').innerText = appState.captain.vehicleModel;
+            if(captain.vehicleNo) document.getElementById('captainVehicleNo').innerText = captain.vehicleNo;
+
+            if(!trackingMap) {
+                trackingMap = L.map('trackingMap').setView(appState.pickupCoordinates, 14);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(trackingMap);
+            }
+            updateRiderGpsStatus(
+                'amber',
+                'Waiting for live driver location',
+                'Your assigned driver can share location from the driver dashboard.'
+            );
+            if(riderMarker) {
+                trackingMap.removeLayer(riderMarker);
+                riderMarker = null;
+            }
+            updateTrackingRoute();
+            setTimeout(() => { trackingMap.invalidateSize(); }, 200);
+            showToast(appState.captain.name + ' accepted your ride and is on the way.');
+        }
+
+        function updateRiderGpsStatus(state, title, help) {
+            let colors = { amber: 'bg-amber-500', green: 'bg-green-500', red: 'bg-red-500' };
+            let indicator = document.getElementById('riderGpsIndicator');
+            indicator.className = 'w-2.5 h-2.5 rounded-full flex-shrink-0 ' + (colors[state] || colors.red);
+            setLocalizedText(document.getElementById('riderGpsStatus'), title);
+            setLocalizedText(document.getElementById('riderGpsHelp'), help);
+        }
+
+        function handleCaptainLocationUpdate(location) {
+            let lat = Number(location && location.lat);
+            let lng = Number(location && location.lng);
+            if(!Number.isFinite(lat) || !Number.isFinite(lng) || lat < 6 || lat > 38 || lng < 68 || lng > 98) {
+                updateRiderGpsStatus('red', 'Live captain GPS: invalid coordinates', 'The server sent a location outside India.');
+                console.error('Rejected invalid captain GPS update:', location);
+                return;
+            }
+            let coordinates = [lat, lng];
+            if(!riderMarker) {
+                riderMarker = L.marker(coordinates).addTo(trackingMap).bindPopup('Live captain location');
+                trackingMap.setView(coordinates, 14);
+            } else {
+                riderMarker.setLatLng(coordinates);
+            }
+            let eta = location.eta ? 'ETA ' + location.eta + ' • ' : '';
+            updateRiderGpsStatus(
+                'green',
+                'Live driver location updating',
+                eta + lat.toFixed(5) + ', ' + lng.toFixed(5)
+            );
+        }
+
+        function showRideCompletionModal() {
+            if(paymentInProgress) return;
+            selectedTipAmount = 0;
+            document.querySelectorAll('.tip-btn').forEach(function(button) {
+                button.classList.remove('border-arideDark', 'bg-yellow-50');
+            });
+            document.getElementById('ratedCaptainName').innerText = appState.captain.name;
+            document.getElementById('ratingModal').classList.remove('hidden');
+        }
+
+        let paymentInProgress = false;
+        let verifiedPaymentId = null;
+
+        async function payOnlineForRide() {
+            if(typeof window.Razorpay !== 'function') {
+                showToast('Online payment is unavailable. Refresh and try again.');
+                return;
+            }
+
+            paymentInProgress = true;
+            try {
+                let orderResponse = await fetch('/api/payment/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        vehicleType: appState.vehicleType,
+                        couponCode: appState.couponCode,
+                        tipAmount: selectedTipAmount
+                    })
+                });
+                let order;
+                try {
+                    order = await orderResponse.json();
+                } catch {
+                    throw new Error('The payment service is unavailable. Use Vercel deployment or run npm run dev:vercel, then configure Razorpay keys.');
+                }
+                if(!orderResponse.ok) throw new Error(order.message || 'Could not start online payment.');
+                if(order.amount !== (appState.fare + selectedTipAmount) * 100 || order.currency !== 'INR') {
+                    throw new Error('The verified ride fare does not match the payment amount. Please retry or choose cash.');
+                }
+
+                let checkout = new Razorpay({
+                    key: order.keyId,
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: 'ARIDE',
+                    description: 'Completed ride payment',
+                    order_id: order.id,
+                    prefill: {
+                        email: window.ARIDEFirebase?.currentUser?.email || ''
+                    },
+                    theme: { color: '#A4863D' },
+                    handler: async function(payment) {
+                        try {
+                            let verificationResponse = await fetch('/api/payment/verify', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    razorpayOrderId: payment.razorpay_order_id,
+                                    razorpayPaymentId: payment.razorpay_payment_id,
+                                    razorpaySignature: payment.razorpay_signature,
+                                    vehicleType: appState.vehicleType,
+                                    couponCode: appState.couponCode,
+                                    tipAmount: selectedTipAmount
+                                })
+                            });
+                            let verification = await verificationResponse.json();
+                            if(!verificationResponse.ok || verification.verified !== true) {
+                                throw new Error(verification.message || 'Payment could not be verified.');
+                            }
+                            verifiedPaymentId = verification.paymentId;
+                            paymentInProgress = false;
+                            completeRide();
+                        } catch(error) {
+                            paymentInProgress = false;
+                            console.error('Online ride payment verification failed:', error);
+                            showToast(error.message || 'Payment verification failed. Contact support before retrying.');
+                        }
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            paymentInProgress = false;
+                            showToast('Payment cancelled. The ride is not marked as paid.');
+                        }
+                    }
+                });
+                checkout.open();
+            } catch(error) {
+                paymentInProgress = false;
+                console.error('Online ride payment could not start:', error);
+                showToast(error.message || 'Could not start online payment. Choose cash or try again.');
+            }
+        }
+
+        let selectedRatingStars = 5;
+        let selectedTipAmount = 0;
+
+        function setRating(stars) {
+            selectedRatingStars = stars;
+            let starBtns = document.querySelectorAll('.star-btn');
+            starBtns.forEach((btn, index) => {
+                if(index < stars) {
+                    btn.classList.add('text-yellow-400');
+                    btn.classList.remove('text-gray-300');
+                } else {
+                    btn.classList.remove('text-yellow-400');
+                    btn.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        function selectTip(amount) {
+            selectedTipAmount = amount;
+            document.querySelectorAll('.tip-btn').forEach(btn => {
+                btn.classList.remove('border-arideDark', 'bg-yellow-50');
+            });
+            event.target.classList.add('border-arideDark', 'bg-yellow-50');
+        }
+
+        async function submitRating() {
+            if(paymentInProgress) return;
+            if(appState.paymentMethod === 'online') {
+                await payOnlineForRide();
+                return;
+            }
+            completeRide();
+        }
+
+        function completeRide() {
+            document.getElementById('ratingModal').classList.add('hidden');
+            ridesHistoryData.unshift({
+                id: currentRideId ? currentRideId.slice(-8).toUpperCase() : 'ARIDE',
+                date: 'Just now',
+                vehicle: document.getElementById('btnVehicleName').textContent.trim(),
+                from: appState.pickup,
+                to: appState.drop,
+                fare: '₹' + (appState.fare + selectedTipAmount),
+                status: 'Completed',
+                paymentMethod: appState.paymentMethod === 'online' ? 'Online · Razorpay' : 'Cash',
+                paymentId: verifiedPaymentId
+            });
+            appState.rating = selectedRatingStars;
+            verifiedPaymentId = null;
+            selectedTipAmount = 0;
+            currentRideId = null;
+            if(rideUnsubscribe) rideUnsubscribe();
+            rideUnsubscribe = null;
+            appState.couponCode = '';
+            appState.couponApplied = false;
+            document.getElementById('couponInput').value = '';
+            document.getElementById('couponMessage').classList.add('hidden');
+            selectVehicle(appState.vehicleType);
+            renderRidesHistory();
+            switchTab('home');
+            showToast(appState.paymentMethod === 'cash' ? 'Ride completed. Pay the driver in cash.' : 'Payment verified and ride completed.');
+        }
+
+        function renderRidesHistory() {
+            let container = document.getElementById('ridesHistoryList');
+            container.innerHTML = '';
+            ridesHistoryData.forEach(ride => {
+                let div = document.createElement('div');
+                div.className = 'bg-white p-5 rounded-3xl shadow-md border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4';
+                div.innerHTML = `
+                    <div>
+                        <div class="flex items-center space-x-2 mb-1">
+                            <span class="bg-yellow-100 text-yellow-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">${ride.vehicle}</span>
+                            <span class="text-xs text-gray-400">${ride.id} • ${ride.date}</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-gray-900">${ride.from} ➔ ${ride.to}</h4>
+                    </div>
+                    <div class="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end">
+                        <div class="text-right">
+                            <span class="text-base font-extrabold text-gray-900 block">${ride.fare}</span>
+                            ${ride.paymentMethod ? `<span class="text-[10px] text-gray-500 block">${ride.paymentMethod}</span>` : ''}
+                            <span class="text-[10px] text-green-600 font-bold">${ride.status}</span>
+                        </div>
+                        <button onclick="switchTab('home')" class="bg-gray-100 hover:bg-arideGold text-gray-800 font-bold px-4 py-2 rounded-xl text-xs transition">
+                            Rebook
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function openChatModal() { document.getElementById('chatModal').classList.remove('hidden'); }
+        function closeChatModal() { document.getElementById('chatModal').classList.add('hidden'); }
+        function openCallModal() { document.getElementById('callModal').classList.remove('hidden'); }
+        function closeCallModal() { document.getElementById('callModal').classList.add('hidden'); }
+
+        function sendChatMessage() {
+            let input = document.getElementById('chatInput');
+            if(!input.value.trim()) return;
+            let chatBox = document.getElementById('chatMessages');
+            let msg = document.createElement('div');
+            msg.className = 'bg-arideGold text-arideDark p-3 rounded-2xl shadow-sm text-xs max-w-[80%] ml-auto font-medium';
+            msg.innerText = input.value;
+            chatBox.appendChild(msg);
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            setTimeout(() => {
+                let reply = document.createElement('div');
+                reply.className = 'bg-white p-3 rounded-2xl shadow-sm text-xs max-w-[80%] font-medium';
+                reply.innerText = 'Got it sir, waiting near the street entrance!';
+                chatBox.appendChild(reply);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 1200);
+        }
+
+        function openSosModal() { document.getElementById('sosModal').classList.remove('hidden'); }
+        function closeSosModal() { document.getElementById('sosModal').classList.add('hidden'); }
+        function triggerSosAction(type) {
+            closeSosModal();
+            showToast('EMERGENCY SOS ALERT dispatched to ' + (type === 'police' ? 'Police (112)' : 'ARIDE Safety Team') + '!');
+        }
+
+        function showToast(message) {
+            let toast = document.getElementById('toastNotification');
+            setLocalizedText(document.getElementById('toastMessage'), message);
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+    <script type="module" src="/src/firebase.js"></script>
+    <script>
+        let installPrompt;
+        const installButton = document.getElementById('installAppButton');
+
+        window.addEventListener('beforeinstallprompt', event => {
+            event.preventDefault();
+            installPrompt = event;
+            installButton.classList.remove('hidden');
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!installPrompt) return;
+            await installPrompt.prompt();
+            await installPrompt.userChoice;
+            installPrompt = null;
+            installButton.classList.add('hidden');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installPrompt = null;
+            installButton.classList.add('hidden');
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(error => {
+                    console.error('Could not register the ARIDE service worker:', error);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
