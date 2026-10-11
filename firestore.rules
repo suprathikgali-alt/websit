@@ -60,12 +60,17 @@ service cloud.firestore {
       allow get: if signedIn()
         && (resource.data.customerUid == request.auth.uid || approvedDriver());
 
-      allow list: if approvedDriver()
-        && get(driverPath(request.auth.uid)).data.available == true
-        && (
-          resource.data.status == 'searching'
-          || resource.data.driverUid == request.auth.uid
-        );
+      allow list: if signedIn() && (
+        resource.data.customerUid == request.auth.uid
+        || (
+          approvedDriver()
+          && get(driverPath(request.auth.uid)).data.available == true
+          && (
+            resource.data.status == 'searching'
+            || resource.data.driverUid == request.auth.uid
+          )
+        )
+      );
 
       allow update: if signedIn() && (
         (

@@ -206,6 +206,19 @@ function subscribeDriverRides(onUpdate, onError) {
   }, onError);
 }
 
+function subscribeCustomerRides(onUpdate, onError) {
+  requireConfigured();
+  if (!auth.currentUser) throw new Error('Sign in to view your rides.');
+  const customerRides = query(
+    collection(db, 'rideRequests'),
+    where('customerUid', '==', auth.currentUser.uid),
+    limit(50)
+  );
+  return onSnapshot(customerRides, snapshot => {
+    onUpdate(snapshot.docs.map(item => ({ id: item.id, ...item.data() })));
+  }, onError);
+}
+
 async function acceptRideRequest(requestId) {
   requireApprovedDriver();
   const rideReference = doc(db, 'rideRequests', requestId);
@@ -290,6 +303,7 @@ window.ARIDEFirebase = {
   cancelRideRequest,
   subscribeOpenRideRequests,
   subscribeDriverRides,
+  subscribeCustomerRides,
   acceptRideRequest,
   sendTripStartOtp,
   verifyTripStartOtp,

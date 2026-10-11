@@ -154,6 +154,9 @@
             </div>
             
             <nav class="flex items-center space-x-4 text-sm font-semibold">
+                <button onclick="openRiderDashboard()" class="rider-nav nav-btn text-gray-300 hover:text-arideGold transition flex items-center gap-1.5 hidden" data-tab="dashboard">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </button>
                 <button onclick="switchTab('home')" class="nav-btn text-arideGold hover:text-arideGold transition flex items-center gap-1.5" data-tab="home">
                     <i class="fa-solid fa-house"></i> Book
                 </button>
@@ -193,6 +196,9 @@
 
     <!-- Mobile Bottom Navigation -->
     <div class="lg:hidden bg-arideDark text-white flex justify-around py-3 border-t border-gray-800 z-30 flex-shrink-0">
+        <button onclick="openRiderDashboard()" class="rider-nav mobile-nav text-gray-400 flex flex-col items-center text-[10px] hidden" data-tab="dashboard">
+            <i class="fa-solid fa-gauge-high text-sm mb-0.5"></i> Dashboard
+        </button>
         <button onclick="switchTab('home')" class="mobile-nav text-arideGold flex flex-col items-center text-[10px]" data-tab="home">
             <i class="fa-solid fa-house text-sm mb-0.5"></i> Book
         </button>
@@ -475,6 +481,37 @@
                     <p id="riderGpsHelp" class="text-[10px] text-gray-500 mt-1">Location appears after the assigned driver shares it.</p>
                 </div>
                 <div id="trackingMap" class="w-full h-full"></div>
+            </div>
+        </div>
+
+        <!-- RIDER VIEW: signed-in customer dashboard -->
+        <div id="view-dashboard" class="view-content hidden flex-1 bg-gray-50 overflow-y-auto p-6 lg:p-10">
+            <div class="max-w-4xl mx-auto w-full">
+                <section class="bg-arideDark text-white rounded-3xl p-6 lg:p-8 mb-6 shadow-xl">
+                    <p class="text-xs uppercase font-bold text-gray-300">ARIDE Rider</p>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold mt-1">Your dashboard</h2>
+                    <p id="riderDashboardEmail" class="text-sm mt-2 text-gray-300"></p>
+                    <div class="flex flex-wrap gap-3 mt-6">
+                        <button onclick="switchTab('home')" class="bg-arideGold text-arideDark font-extrabold px-5 py-3 rounded-xl text-sm">
+                            <i class="fa-solid fa-car-side mr-1"></i> Book a ride
+                        </button>
+                        <button onclick="switchTab('rides')" class="bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-3 rounded-xl text-sm">
+                            <i class="fa-solid fa-clock-rotate-left mr-1"></i> Ride history
+                        </button>
+                    </div>
+                </section>
+                <section class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <div>
+                            <h3 class="text-lg font-extrabold text-gray-900">Your rides</h3>
+                            <p class="text-xs text-gray-500 mt-1">Live updates and your recent ride requests.</p>
+                        </div>
+                        <span id="riderDashboardRideCount" class="bg-yellow-100 text-yellow-800 text-xs font-extrabold px-3 py-1 rounded-full">0 rides</span>
+                    </div>
+                    <div id="riderDashboardRides" class="space-y-3" aria-live="polite">
+                        <p class="text-sm text-gray-500">Loading your rides…</p>
+                    </div>
+                </section>
             </div>
         </div>
 
@@ -1125,6 +1162,7 @@
         let pendingRideBooking = sessionStorage.getItem('aridePendingRideBooking') === '1';
         let currentRideId = null;
         let rideUnsubscribe = null;
+        let riderRidesUnsubscribe = null;
         let driverQueueUnsubscribe = null;
         let driverRidesUnsubscribe = null;
         let driverAvailable = false;
@@ -1140,6 +1178,8 @@
         const locationSearchTimers = {};
         const locationSearchRequests = { pickup: 0, drop: 0 };
         let ridesHistoryData = [];
+        let customerRidesData = [];
+        let lastAuthUid = null;
 
         function initializeAride() {
             populateMobileCitySelector();
@@ -1514,6 +1554,92 @@
             if(tabId === 'tracking') setTimeout(() => { if(trackingMap) trackingMap.invalidateSize(); }, 200);
         }
 
+        function openRiderDashboard() {
+            if(!window.ARIDEFirebase?.currentUser) {
+                showToast('Sign in to view your rider dashboard.');
+                openAuthModal();
+                return;
+            }
+            switchTab('dashboard');
+            refreshRiderDashboard();
+        }
+
+        function refreshRiderDashboard() {
+            let firebase = window.ARIDEFirebase;
+            if(!firebase?.configured || !firebase.currentUser) {
+                stopRiderSubscription();
+                document.getElementById('riderDashboardRides').innerText = 'Sign in to see your rides.';
+                document.getElementById('riderDashboardRideCount').innerText = '0 rides';
+                return;
+            }
+            document.getElementById('riderDashboardEmail').innerText = firebase.currentUser.email || 'Signed in to ARIDE';
+            if(!riderRidesUnsubscribe) {
+                riderRidesUnsubscribe = firebase.subscribeCustomerRides(
+                    rides => {
+                        customerRidesData = rides;
+                        renderRiderDashboardRides(rides);
+                        renderRidesHistory();
+                    },
+                    handleRiderDashboardError
+                );
+            }
+        }
+
+        function stopRiderSubscription() {
+            if(riderRidesUnsubscribe) riderRidesUnsubscribe();
+            riderRidesUnsubscribe = null;
+            customerRidesData = [];
+            renderRidesHistory();
+        }
+
+        function handleRiderDashboardError(error) {
+            console.error('Rider dashboard could not load rides:', error);
+            document.getElementById('riderDashboardRides').innerText = error.message || 'Could not load your rides. Please try again.';
+        }
+
+        function renderRiderDashboardRides(rides) {
+            let container = document.getElementById('riderDashboardRides');
+            container.replaceChildren();
+            let recentRides = rides
+                .sort((first, second) => {
+                    let firstDate = first.createdAt?.toMillis?.() || 0;
+                    let secondDate = second.createdAt?.toMillis?.() || 0;
+                    return secondDate - firstDate;
+                })
+                .slice(0, 5);
+            let activeRideCount = rides.filter(ride => ['searching', 'accepted', 'arrived', 'in_progress'].includes(ride.status)).length;
+            document.getElementById('riderDashboardRideCount').innerText = activeRideCount
+                ? activeRideCount + ' active · ' + rides.length + ' total'
+                : rides.length + (rides.length === 1 ? ' ride' : ' rides');
+
+            if(!recentRides.length) {
+                let empty = document.createElement('p');
+                empty.className = 'text-sm text-gray-500 py-3';
+                empty.innerText = 'No rides yet. Book your first ride with ARIDE.';
+                container.appendChild(empty);
+                return;
+            }
+
+            recentRides.forEach(ride => {
+                let card = document.createElement('article');
+                card.className = 'border border-gray-200 rounded-xl p-4';
+                let header = document.createElement('div');
+                header.className = 'flex flex-wrap items-center justify-between gap-2';
+                let type = document.createElement('h4');
+                type.className = 'font-extrabold text-gray-900';
+                type.innerText = (ride.vehicleType || 'Ride').toUpperCase() + ' · ₹' + (ride.fare ?? '—');
+                let status = document.createElement('span');
+                status.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800';
+                status.innerText = (ride.status || 'unknown').replaceAll('_', ' ').toUpperCase();
+                let route = document.createElement('p');
+                route.className = 'text-sm text-gray-600 mt-2';
+                route.innerText = (ride.pickup || 'Pickup unavailable') + ' → ' + (ride.drop || 'Drop-off unavailable');
+                header.append(type, status);
+                card.append(header, route);
+                container.appendChild(card);
+            });
+        }
+
         function openAuthModal() {
             let firebase = window.ARIDEFirebase;
             document.getElementById('authMessage').innerText = firebase && firebase.configured
@@ -1608,6 +1734,13 @@
         function onArideAuthChanged(user, access) {
             let label = document.getElementById('authStatusLabel');
             label.innerText = user ? 'Account' : 'Sign in';
+            let signedInUid = user ? user.uid : null;
+            let identityChanged = lastAuthUid !== signedInUid;
+            if(identityChanged) {
+                stopRiderSubscription();
+                stopDriverSubscriptions();
+                lastAuthUid = signedInUid;
+            }
             driverApproved = Boolean(access && access.driverApproved);
             driverAvailable = Boolean(access && access.driverProfile && access.driverProfile.available);
             let status = document.getElementById('driverAccountStatus');
@@ -1615,6 +1748,9 @@
             let availabilityButton = document.getElementById('driverAvailabilityButton');
             document.querySelectorAll('.driver-nav').forEach(button => {
                 button.classList.toggle('hidden', !driverApproved);
+            });
+            document.querySelectorAll('.rider-nav').forEach(button => {
+                button.classList.toggle('hidden', !user);
             });
 
             if(!window.ARIDEFirebase?.configured) {
@@ -1626,11 +1762,14 @@
                 roleNotice.innerText = 'Customers can book rides after email sign-in. Driver access is granted separately by the ARIDE administrator in Firebase.';
                 availabilityButton.disabled = true;
                 refreshDriverDashboard();
+                stopRiderSubscription();
                 if(appState.currentTab === 'driver') switchTab('home');
+                if(appState.currentTab === 'dashboard') switchTab('home');
             } else if(!driverApproved) {
                 status.innerText = user.email || 'Signed in';
                 roleNotice.innerText = 'This account is not approved for driver access. Ask the ARIDE administrator to create an approved drivers record for this Firebase user.';
                 availabilityButton.disabled = true;
+                refreshRiderDashboard();
                 if(appState.currentTab === 'driver') switchTab('home');
             } else {
                 let profile = access.driverProfile;
@@ -1641,6 +1780,7 @@
                 availabilityButton.classList.toggle('bg-green-600', driverAvailable);
                 availabilityButton.classList.toggle('bg-gray-500', !driverAvailable);
                 refreshDriverDashboard();
+                refreshRiderDashboard();
             }
 
             document.getElementById('authSubmitButton').classList.toggle('hidden', Boolean(user));
@@ -1651,6 +1791,10 @@
                 document.getElementById('authEmailInput').value = user.email || '';
                 document.getElementById('authMessage').innerText = 'Signed in as ' + (user.email || 'your ARIDE account') + '.';
                 resetEmailOtpForm();
+                if(identityChanged && !pendingRideBooking) {
+                    if(driverApproved) openDriverDashboard();
+                    else switchTab('dashboard');
+                }
                 if(pendingRideBooking) {
                     pendingRideBooking = false;
                     sessionStorage.removeItem('aridePendingRideBooking');
@@ -2499,29 +2643,62 @@
 
         function renderRidesHistory() {
             let container = document.getElementById('ridesHistoryList');
-            container.innerHTML = '';
-            ridesHistoryData.forEach(ride => {
+            container.replaceChildren();
+            let firebase = window.ARIDEFirebase;
+            let history = firebase?.currentUser ? customerRidesData : [];
+            if(!history.length) {
+                let empty = document.createElement('p');
+                empty.className = 'text-sm text-gray-500 bg-white border border-gray-200 rounded-2xl p-5';
+                empty.innerText = firebase?.currentUser
+                    ? 'No rides yet. Book your first ride with ARIDE.'
+                    : 'Sign in to see your ride history.';
+                container.appendChild(empty);
+                return;
+            }
+            history.forEach(ride => {
                 let div = document.createElement('div');
                 div.className = 'bg-white p-5 rounded-3xl shadow-md border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4';
-                div.innerHTML = `
-                    <div>
-                        <div class="flex items-center space-x-2 mb-1">
-                            <span class="bg-yellow-100 text-yellow-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">${ride.vehicle}</span>
-                            <span class="text-xs text-gray-400">${ride.id} • ${ride.date}</span>
-                        </div>
-                        <h4 class="text-sm font-bold text-gray-900">${ride.from} ➔ ${ride.to}</h4>
-                    </div>
-                    <div class="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end">
-                        <div class="text-right">
-                            <span class="text-base font-extrabold text-gray-900 block">${ride.fare}</span>
-                            ${ride.paymentMethod ? `<span class="text-[10px] text-gray-500 block">${ride.paymentMethod}</span>` : ''}
-                            <span class="text-[10px] text-green-600 font-bold">${ride.status}</span>
-                        </div>
-                        <button onclick="switchTab('home')" class="bg-gray-100 hover:bg-arideGold text-gray-800 font-bold px-4 py-2 rounded-xl text-xs transition">
-                            Rebook
-                        </button>
-                    </div>
-                `;
+                let summary = document.createElement('div');
+                let metadata = document.createElement('div');
+                metadata.className = 'flex items-center space-x-2 mb-1';
+                let vehicle = document.createElement('span');
+                vehicle.className = 'bg-yellow-100 text-yellow-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full';
+                vehicle.innerText = (ride.vehicleType || ride.vehicle || 'Ride').toUpperCase();
+                let date = ride.createdAt?.toDate?.().toLocaleString()
+                    || ride.date
+                    || 'Date unavailable';
+                let identifier = ride.id ? ride.id.slice(-8).toUpperCase() : 'ARIDE';
+                let rideInfo = document.createElement('span');
+                rideInfo.className = 'text-xs text-gray-400';
+                rideInfo.innerText = identifier + ' · ' + date;
+                metadata.append(vehicle, rideInfo);
+                let route = document.createElement('h4');
+                route.className = 'text-sm font-bold text-gray-900';
+                route.innerText = (ride.pickup || ride.from || 'Pickup unavailable') + ' → ' + (ride.drop || ride.to || 'Drop-off unavailable');
+                summary.append(metadata, route);
+
+                let details = document.createElement('div');
+                details.className = 'flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end';
+                let payment = document.createElement('div');
+                payment.className = 'text-right';
+                let fare = document.createElement('span');
+                fare.className = 'text-base font-extrabold text-gray-900 block';
+                fare.innerText = typeof ride.fare === 'number' ? '₹' + ride.fare : (ride.fare || '');
+                let paymentMethod = document.createElement('span');
+                paymentMethod.className = 'text-[10px] text-gray-500 block';
+                paymentMethod.innerText = ride.paymentMethod === 'online'
+                    ? 'Online'
+                    : ride.paymentMethod === 'cash' ? 'Cash' : (ride.paymentMethod || '');
+                let status = document.createElement('span');
+                status.className = 'text-[10px] text-green-600 font-bold';
+                status.innerText = (ride.status || 'unknown').replaceAll('_', ' ');
+                payment.append(fare, paymentMethod, status);
+                let rebook = document.createElement('button');
+                rebook.className = 'bg-gray-100 hover:bg-arideGold text-gray-800 font-bold px-4 py-2 rounded-xl text-xs transition';
+                rebook.innerText = 'Rebook';
+                rebook.onclick = () => switchTab('home');
+                details.append(payment, rebook);
+                div.append(summary, details);
                 container.appendChild(div);
             });
         }
